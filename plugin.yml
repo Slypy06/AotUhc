@@ -1,0 +1,9 @@
+main: fr.slypy.aotuhc.AotUhc
+name: AotUhc
+version: 1.0.0
+author: Slypy06
+description: A free Aot Uhc plugin !
+api-version: 1.16
+commands:
+  aot:
+    permission: aotuhc.aot.use
