@@ -19,14 +19,20 @@ public class Skin {
 	public static Skin jean = new Skin(Skin.skinsStorageURL + "eldia/jean.png");
 	public static Skin soldier = new Skin(Skin.skinsStorageURL + "eldia/soldier.png");
 	
-	public static Skin zeke = new Skin(Skin.skinsStorageURL + "eldia/zeke.png");
-	public static Skin pieck = new Skin(Skin.skinsStorageURL + "eldia/pieck.png");
-	public static Skin lara = new Skin(Skin.skinsStorageURL + "eldia/lara.png");
+	public static Skin zeke = new Skin(Skin.skinsStorageURL + "mahr/zeke.png");
+	public static Skin pieck = new Skin(Skin.skinsStorageURL + "mahr/pieck.png");
+	public static Skin lara = new Skin(Skin.skinsStorageURL + "mahr/lara.png");
+	public static Skin reiner = new Skin(Skin.skinsStorageURL + "mahr/reiner.png");
+	public static Skin annie = new Skin(Skin.skinsStorageURL + "mahr/annie.png");
+	public static Skin bertholdt = new Skin(Skin.skinsStorageURL + "eldia/bertholdt.png");
 	
 	public static Skin assailant = new Skin(Skin.skinsStorageURL + "assailant.png");
 	public static Skin beast = new Skin(Skin.skinsStorageURL + "beast.png");
 	public static Skin cart = new Skin(Skin.skinsStorageURL + "cart.png");
 	public static Skin warhammer = new Skin(Skin.skinsStorageURL + "warhammer.png");
+	public static Skin armorer = new Skin(Skin.skinsStorageURL + "armorer.png");
+	public static Skin female = new Skin(Skin.skinsStorageURL + "female.png");
+	public static Skin colossal = new Skin(Skin.skinsStorageURL + "colossal.png");
 	
 	String skinPath;
 	

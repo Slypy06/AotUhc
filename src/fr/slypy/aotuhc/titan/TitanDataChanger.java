@@ -1,6 +1,7 @@
 package fr.slypy.aotuhc.titan;
 
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 public class TitanDataChanger {
@@ -26,6 +27,18 @@ public class TitanDataChanger {
 	public static void resetPlayerReach(Player p) {
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reach 4.5 " + p.getUniqueId());
+		
+	}
+	
+	public static void setPlayerHealth(Player p, double health) {
+		
+		p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+		
+	}
+	
+	public static void resetPlayerHealth(Player p) {
+		
+		p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
 		
 	}
 	

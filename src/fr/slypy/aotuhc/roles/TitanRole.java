@@ -19,6 +19,8 @@ public class TitanRole extends Role {
 
 	public TitanData data;
 	private BukkitTask autoUntransformTask = null;
+	private RoleRunnable transformRunnable;
+	private RoleRunnable untransformRunnable;
 	public boolean transformed;
 	private boolean canTransform = true;
 	
@@ -26,6 +28,20 @@ public class TitanRole extends Role {
 		
 		super(name, nb, effects, listener, commands, startRun, skin);
 		this.data = data;
+		
+		transformRunnable = new RoleRunnable() {
+
+			@Override
+			public void run(Role role) {}
+			
+		};
+		
+		untransformRunnable = new RoleRunnable() {
+
+			@Override
+			public void run(Role role) {}
+			
+		};
 
 	}
 	
@@ -74,6 +90,7 @@ public class TitanRole extends Role {
 		
 		TitanDataChanger.setPlayerReach(this.getPlayer(), data.getReach());
 		TitanDataChanger.setPlayerSize(this.getPlayer(), data.getSize());
+		TitanDataChanger.setPlayerHealth(this.getPlayer(), data.getHealth());
 		
 		this.affectTitanEffects();
 		
@@ -92,6 +109,8 @@ public class TitanRole extends Role {
 			
 		}, data.getTransformTime() * 20);
 		
+		transformRunnable.run(this);
+		
 	}
 	
 	private void autoUntransform() {
@@ -108,6 +127,9 @@ public class TitanRole extends Role {
 		
 		TitanDataChanger.resetPlayerReach(this.getPlayer());
 		TitanDataChanger.resetPlayerSize(this.getPlayer());
+		TitanDataChanger.resetPlayerHealth(this.getPlayer());
+		
+		untransformRunnable.run(this);
 		
 	}
 	
@@ -165,6 +187,30 @@ public class TitanRole extends Role {
 		}
 		
 		data.getEffects().forEach(potion -> this.getPlayer().removePotionEffect(potion.getType()));
+		
+	}
+
+	public RoleRunnable getTransformRunnable() {
+		
+		return transformRunnable;
+		
+	}
+
+	public void setTransformRunnable(RoleRunnable transformRunnable) {
+		
+		this.transformRunnable = transformRunnable;
+		
+	}
+
+	public RoleRunnable getUntransformRunnable() {
+		
+		return untransformRunnable;
+		
+	}
+
+	public void setUntransformRunnable(RoleRunnable untransformRunnable) {
+		
+		this.untransformRunnable = untransformRunnable;
 		
 	}
 	

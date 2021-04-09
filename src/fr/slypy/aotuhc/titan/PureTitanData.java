@@ -14,14 +14,28 @@ public class PureTitanData {
 	List<PotionEffect> effects;
 	Listener listener;
 	Skin skin;
+	double health;
 	
-	public PureTitanData(float size, float reach, List<PotionEffect> effects, Listener listener, Skin skin) {
+	public PureTitanData(float size, float reach, List<PotionEffect> effects, Listener listener, Skin skin, double health) {
 
 		this.size = size;
 		this.reach = reach;
 		this.effects = effects;
 		this.listener = listener;
 		this.skin = skin;
+		this.health = health;
+		
+	}
+
+	public double getHealth() {
+		
+		return health;
+		
+	}
+
+	public void setHealth(double health) {
+		
+		this.health = health;
 		
 	}
 

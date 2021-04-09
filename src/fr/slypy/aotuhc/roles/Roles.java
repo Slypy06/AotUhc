@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,11 +21,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -35,6 +36,7 @@ import org.bukkit.potion.PotionEffectType;
 import fr.slypy.aotuhc.AotUhc;
 import fr.slypy.aotuhc.AxePowerAlly;
 import fr.slypy.aotuhc.GameStorage;
+import fr.slypy.aotuhc.LimitedUsesListener;
 import fr.slypy.aotuhc.Skin;
 import fr.slypy.aotuhc.api.FancyMessage;
 import fr.slypy.aotuhc.commands.Command;
@@ -57,6 +59,9 @@ public class Roles {
 	public static TitanRole zeke;
 	public static TitanRole pieck;
 	public static TitanRole lara;
+	public static TitanRole reiner;
+	public static TitanRole annie;
+	public static TitanRole bertholdt;
 	
 	public static void initRoles() {
 		
@@ -115,7 +120,7 @@ public class Roles {
 		emptyWeaponMeta.setCustomModelData(10002);
 		emptyWeapon.setItemMeta(emptyWeaponMeta);
 		
-		eren = new TitanRole(RolesName.EREN, AotUhc.config.isInt("eren.nb") ? AotUhc.config.getInt("eren.nb") : 1, Arrays.asList(), new Listener() {
+		eren = new TitanRole(RolesName.EREN, AotUhc.config.isInt("eren.nb") ? AotUhc.config.getInt("eren.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {
 			
 			boolean used = false;
 			
@@ -350,7 +355,7 @@ public class Roles {
 				
 			}
 			
-		}, Skin.eren, new TitanData(15, 25, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 3), new PotionEffect(PotionEffectType.JUMP, 0, 2)), new Listener() {}, 90, 300, emptyWeapon, Skin.assailant));
+		}, Skin.eren, new TitanData(15, 25, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 3), new PotionEffect(PotionEffectType.JUMP, 0, 2)), new Listener() {}, 90, 300, emptyWeapon, Skin.assailant, 40));
 		 
 		mikasa = new Role(RolesName.MIKASA, AotUhc.config.isInt("mikasa.nb") ? AotUhc.config.getInt("mikasa.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1), new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1)), new Listener() {
 			
@@ -440,16 +445,16 @@ public class Roles {
 								
 								Player target = Bukkit.getPlayer(args[0]);
 								
-								double x = p.getLocation().getX() - target.getLocation().getX();
-								
-								double y = p.getLocation().getY() - target.getLocation().getY();
-								
-								if(GameStorage.roles.containsKey(target.getUniqueId()) && Math.sqrt(x * x + y * y) <= 20) {
+								if(GameStorage.roles.containsKey(target.getUniqueId()) && p.getLocation().distance(target.getLocation()) <= 20) {
 									
 									target.sendMessage(AotUhc.prefix + "§aHistoria vous a soigné !");
 									target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 4* 20, 2, false, false));
 									target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 20, 2, false, false));
 									target.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 10 * 20, 0, false, false));
+									
+								} else {
+									
+									p.sendMessage(AotUhc.prefix + "§cImpossible de soigner " + args[0] +".");
 									
 								}
 								
@@ -637,11 +642,7 @@ public class Roles {
 								
 								Player pc = rc.getPlayer();
 								
-								double x = pc.getLocation().getX() - ps.getLocation().getX();
-								
-								double y = pc.getLocation().getY() - ps.getLocation().getY();
-								
-								if(Math.sqrt(x * x + y * y) <= 20) {
+								if(pc.getLocation().distance(ps.getLocation()) <= 20) {
 									
 									pc.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0, false, false));
 									pc.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
@@ -679,11 +680,7 @@ public class Roles {
 								
 								Player ps = rs.getPlayer();
 								
-								double x = pc.getLocation().getX() - ps.getLocation().getX();
-								
-								double y = pc.getLocation().getY() - ps.getLocation().getY();
-								
-								if(Math.sqrt(x * x + y * y) <= 20) {
+								if(pc.getLocation().distance(ps.getLocation()) <= 20) {
 									
 									pc.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0, false, false));
 									pc.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
@@ -740,11 +737,7 @@ public class Roles {
 									
 									Player soldier = r.getPlayer();
 									
-									double x = soldier.getLocation().getX() - p.getLocation().getX();
-									
-									double y = soldier.getLocation().getY() - p.getLocation().getY();
-									
-									if(Math.sqrt(x * x + y * y) <= 20) {
+									if(soldier.getLocation().distance(p.getLocation()) <= 20) {
 									
 										Bukkit.broadcastMessage(AotUhc.prefix + "§6Jean (" + p.getName() + ") a prouvé ses talents de meneur en boostant les soldats à proximité de lui !");
 										
@@ -796,7 +789,7 @@ public class Roles {
 		crossbow.addEnchantment(Enchantment.MULTISHOT, 1);
 		crossbow.addEnchantment(Enchantment.PIERCING, 4);
 		
-		zeke = new TitanRole(RolesName.ZEKE, 1, Arrays.asList(), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+		zeke = new TitanRole(RolesName.ZEKE, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
 			
 			@Override
 			public void run(Role role) {
@@ -806,29 +799,27 @@ public class Roles {
 				
 			}
 			
-		}, Skin.zeke, new TitanData(16, 30, Arrays.asList(), new Listener() {}, 75, 390, crossbow, Skin.beast));
+		}, Skin.zeke, new TitanData(16, 30, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 2), new PotionEffect(PotionEffectType.SPEED, 0, 1), new PotionEffect(PotionEffectType.JUMP, 0, 0)), new Listener() {}, 75, 390, crossbow, Skin.beast, 40));
 		
 		ItemStack warHammer = new ItemStack(Material.DIAMOND_SWORD);
 		ItemMeta warHammerMeta = warHammer.getItemMeta();
 		warHammerMeta.setCustomModelData(10002);
 		warHammer.setItemMeta(warHammerMeta);
 		
-		lara = new TitanRole(RolesName.LARA, 1, Arrays.asList(), new Listener() {
-			
-			List<UUID> uses = new ArrayList<UUID>();
+		lara = new TitanRole(RolesName.LARA, 1, Arrays.asList(), new LimitedUsesListener() {
 			
 			@EventHandler
 			public void spikes(PlayerInteractEvent event) {
 				
-				if(GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && GameStorage.roles.get((event.getPlayer().getUniqueId())).getName() == RolesName.LARA) {
+				if(GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && GameStorage.roles.get((event.getPlayer().getUniqueId())).getName() == RolesName.LARA && event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
 					
-					if(uses.contains(event.getPlayer().getUniqueId())) {
+					if(uses.containsKey(event.getPlayer().getUniqueId())) {
 						
 						return;
 						
 					} else {
 						
-						uses.add(event.getPlayer().getUniqueId());
+						uses.put(event.getPlayer().getUniqueId(), 0);
 						
 						Player l = event.getPlayer();
 						
@@ -838,10 +829,7 @@ public class Roles {
 								
 								Player p = r.getPlayer();
 								
-								double x = p.getLocation().getX() - l.getLocation().getX();
-								double y = p.getLocation().getY() - l.getLocation().getY();
-								
-								if(Math.sqrt(x*x + y*y) <= 30) {
+								if(p.getLocation().distance(l.getLocation()) <= 30) {
 									
 									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 3 * 20, 7));
 									p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 3 * 20, 250));
@@ -870,8 +858,133 @@ public class Roles {
 				
 			}
 			
-		}, Skin.lara, new TitanData(15, 40, Arrays.asList(), new Listener() {}, 60, 480, warHammer, Skin.warhammer));
+		}, Skin.lara, new TitanData(15, 40, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 1), new PotionEffect(PotionEffectType.JUMP, 0, 1)), new Listener() {}, 60, 480, warHammer, Skin.warhammer, 40));
 		
+		lara.setTransformRunnable(new RoleRunnable() {
+			
+			@Override
+			public void run(Role role) {
+				
+				if(role.isImplemented() && ((LimitedUsesListener) role.getListener()).uses.containsKey(role.getPlayer().getUniqueId())) {
+					
+					((LimitedUsesListener) role.getListener()).uses.remove(role.getPlayer().getUniqueId());
+					
+				}
+				
+			}
+			
+		});
+		
+		ItemStack bow = new ItemStack(Material.BOW);
+		ItemMeta bowMeta = bow.getItemMeta();
+		bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, 2, true);
+		bowMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
+		bow.setItemMeta(bowMeta);
+		
+        pieck = new TitanRole(RolesName.PIECK, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+            
+            @Override
+            public void run(Role role) {
+
+                Player p = role.getPlayer();
+                p.getInventory().setItem(8, AotUhc.titanFlint);
+                
+            }
+            
+        }, Skin.pieck, new TitanData(4, 8, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 0), new PotionEffect(PotionEffectType.SPEED, 0, 2), new PotionEffect(PotionEffectType.JUMP, 0, 0), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 0)), new Listener() {}, 180, 300, bow, Skin.cart, 30));
+		
+       reiner = new TitanRole(RolesName.REINER, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+            
+            @Override
+            public void run(Role role) {
+
+                Player p = role.getPlayer();
+                p.getInventory().setItem(8, AotUhc.titanFlint);
+                
+            }
+            
+        }, Skin.reiner, new TitanData(15, 23, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 1), new PotionEffect(PotionEffectType.JUMP, 0, 2), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 3)), new Listener() {}, 75, 390, emptyWeapon, Skin.armorer, 40));
+
+       annie = new TitanRole(RolesName.ANNIE, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+           
+           @Override
+           public void run(Role role) {
+
+               Player p = role.getPlayer();
+               p.getInventory().setItem(8, AotUhc.titanFlint);
+               
+           }
+           
+       }, Skin.annie, new TitanData(15, 25, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 3), new PotionEffect(PotionEffectType.JUMP, 0, 3), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1)), new Listener() {}, 75, 390, emptyWeapon, Skin.female, 40)); 
+       
+       bertholdt = new TitanRole(RolesName.BERTOLDT, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new LimitedUsesListener() {
+    	   
+    	   @EventHandler
+    	   public void fireWave(PlayerToggleSneakEvent event) {
+    		   
+    		   if(GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && GameStorage.roles.get((event.getPlayer().getUniqueId())).getName() == RolesName.BERTOLDT && event.isSneaking()) {
+    			   
+    			   if(!uses.containsKey(event.getPlayer().getUniqueId())) {
+    				   
+    				   uses.put(event.getPlayer().getUniqueId(), 0);
+    				   
+    				   Player c = event.getPlayer();
+    				   
+    				   Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/particle minecraft:campfire_cosy_smoke " + c.getLocation().getX() + " " + (c.getLocation().getY() + 30) + " " + c.getLocation().getZ() + " 5 12 5 0.2 10000");
+    				   
+    				   for(Role r : GameStorage.roles.values()) {
+    					   
+    					   if(!r.getPlayer().getUniqueId().equals(c.getPlayer().getUniqueId())) {
+    						   
+								Player p = r.getPlayer();
+
+								if(p.getLocation().distance(c.getLocation().add(0, 30, 0)) <= 50) {
+									
+									Location loc = c.getLocation();
+									loc.setY(loc.getY() + 30);
+									
+									p.setVelocity(p.getLocation().toVector().subtract(loc.toVector()).normalize().multiply(3));
+									p.setFireTicks(10 * 20);
+									
+								}
+    						   
+    					   }
+    					   
+    				   }
+    				   
+    			   }
+    			   
+    		   }
+    		   
+    	   }
+    	   
+       }, Arrays.asList(), new RoleRunnable() {
+           
+           @Override
+           public void run(Role role) {
+
+               Player p = role.getPlayer();
+               p.getInventory().setItem(8, AotUhc.titanFlint);
+               
+           }
+           
+       }, Skin.bertholdt, new TitanData(60, 40, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 5), new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 1), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 2)), new Listener() {}, 60, 720, emptyWeapon, Skin.bertholdt, 40)); 
+       
+       bertholdt.setTransformRunnable(new RoleRunnable() {
+			
+			@Override
+			public void run(Role role) {
+				
+				if(role.isImplemented() && ((LimitedUsesListener) role.getListener()).uses.containsKey(role.getPlayer().getUniqueId())) {
+					
+					((LimitedUsesListener) role.getListener()).uses.remove(role.getPlayer().getUniqueId());
+					
+				}
+				
+			}
+			
+		});
+       
 	}
 	
 	public static Map<Player, Double> getPlayerByDistance(Location src) {
@@ -888,11 +1001,7 @@ public class Roles {
 			
 			if(GameStorage.roles.containsKey(p.getUniqueId())) {
 				
-				double x = p.getLocation().getX() - src.getX();
-				
-				double y = p.getLocation().getY() - src.getY();
-				
-				players.put(p, new Double(Math.sqrt(x*x + y*y)));
+				players.put(p, p.getLocation().distance(src));
 				
 			}
 				

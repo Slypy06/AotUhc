@@ -25,7 +25,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {
-
+		
 		if(args.length == 1 && args[0].equalsIgnoreCase("start")) {
 			
 			if(Bukkit.getOnlinePlayers().size() < 10) {

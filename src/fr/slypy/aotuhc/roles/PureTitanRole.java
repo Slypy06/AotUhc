@@ -14,11 +14,19 @@ public class PureTitanRole extends Role {
 
 	public PureTitanData data;
 	public boolean transformed;
+	private RoleRunnable transformRunnable;
 	
 	public PureTitanRole(RolesName name, int nb, List<PotionEffect> effects, Listener listener, List<Command> commands, RoleRunnable startRun, Skin skin, PureTitanData data) {
 		
 		super(name, nb, effects, listener, commands, startRun, skin);
 		this.data = data;
+		
+		transformRunnable = new RoleRunnable() {
+			
+			@Override
+			public void run(Role role) {}
+			
+		};
 
 	}
 	
@@ -38,8 +46,23 @@ public class PureTitanRole extends Role {
 		
 		TitanDataChanger.setPlayerReach(this.getPlayer(), data.getReach());
 		TitanDataChanger.setPlayerSize(this.getPlayer(), data.getSize());
+		TitanDataChanger.setPlayerHealth(this.getPlayer(), data.getHealth());
 		
 		this.affectTitanEffects();
+		
+		transformRunnable.run(this);
+		
+	}
+
+	public RoleRunnable getTransformRunnable() {
+		
+		return transformRunnable;
+		
+	}
+
+	public void setTransformRunnable(RoleRunnable transformRunnable) {
+		
+		this.transformRunnable = transformRunnable;
 		
 	}
 

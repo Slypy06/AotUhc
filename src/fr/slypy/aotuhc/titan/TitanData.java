@@ -19,8 +19,9 @@ public class TitanData {
 	Skin skin;
 	int cooldown;
 	ItemStack titanWeapon;
+	double health;
 	
-	public TitanData(float size, float reach, List<PotionEffect> effects, Listener listener, int transformTime, int cooldown, ItemStack titanWeapon, Skin skin) {
+	public TitanData(float size, float reach, List<PotionEffect> effects, Listener listener, int transformTime, int cooldown, ItemStack titanWeapon, Skin skin, double health) {
 
 		this.size = size;
 		this.reach = reach;
@@ -30,9 +31,22 @@ public class TitanData {
 		this.cooldown = cooldown;
 		this.titanWeapon = TitanData.addTitanTagToItem(titanWeapon);
 		this.skin = skin;
+		this.health = health;
 		
 	}
 	
+	public double getHealth() {
+		
+		return health;
+		
+	}
+
+	public void setHealth(double health) {
+		
+		this.health = health;
+		
+	}
+
 	public Skin getSkin() {
 		
 		return skin;
