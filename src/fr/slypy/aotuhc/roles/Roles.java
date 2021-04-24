@@ -40,6 +40,7 @@ import fr.slypy.aotuhc.LimitedUsesListener;
 import fr.slypy.aotuhc.Skin;
 import fr.slypy.aotuhc.api.FancyMessage;
 import fr.slypy.aotuhc.commands.Command;
+import fr.slypy.aotuhc.titan.PureTitanData;
 import fr.slypy.aotuhc.titan.TitanData;
 
 public class Roles {
@@ -62,6 +63,16 @@ public class Roles {
 	public static TitanRole reiner;
 	public static TitanRole annie;
 	public static TitanRole bertholdt;
+	public static TitanRole porco;
+	public static Role falco;
+	public static Role gaby;
+	public static Role magath;
+	
+	public static PureTitanRole smiling;
+	public static PureTitanRole deviant;
+	public static PureTitanRole small;
+	public static PureTitanRole medium;
+	public static PureTitanRole great;
 	
 	public static void initRoles() {
 		
@@ -112,7 +123,6 @@ public class Roles {
 			public void run(Role role) {}
 			
 		}, Skin.erwin);
-
 		
 		
 		ItemStack emptyWeapon = new ItemStack(Material.FLINT);
@@ -388,7 +398,22 @@ public class Roles {
 		}, Arrays.asList(), new RoleRunnable() {
 
 			@Override
-			public void run(Role role) {}
+			public void run(Role role) {
+				
+				for(Role r : GameStorage.roles.values()) {
+					
+					if(r.getName() == RolesName.EREN) {
+						
+						return;
+						
+					}
+					
+				}
+				
+				role.removeEffects();
+				role.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+				
+			}
 			
 		}, Skin.mikasa);
 		
@@ -789,7 +814,7 @@ public class Roles {
 		crossbow.addEnchantment(Enchantment.MULTISHOT, 1);
 		crossbow.addEnchantment(Enchantment.PIERCING, 4);
 		
-		zeke = new TitanRole(RolesName.ZEKE, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+		zeke = new TitanRole(RolesName.ZEKE, AotUhc.config.isInt("zeke.nb") ? AotUhc.config.getInt("zeke.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
 			
 			@Override
 			public void run(Role role) {
@@ -806,7 +831,7 @@ public class Roles {
 		warHammerMeta.setCustomModelData(10002);
 		warHammer.setItemMeta(warHammerMeta);
 		
-		lara = new TitanRole(RolesName.LARA, 1, Arrays.asList(), new LimitedUsesListener() {
+		lara = new TitanRole(RolesName.LARA, AotUhc.config.isInt("lara.nb") ? AotUhc.config.getInt("lara.nb") : 1, Arrays.asList(), new LimitedUsesListener() {
 			
 			@EventHandler
 			public void spikes(PlayerInteractEvent event) {
@@ -881,7 +906,7 @@ public class Roles {
 		bowMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
 		bow.setItemMeta(bowMeta);
 		
-        pieck = new TitanRole(RolesName.PIECK, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+        pieck = new TitanRole(RolesName.PIECK, AotUhc.config.isInt("pieck.nb") ? AotUhc.config.getInt("pieck.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
             
             @Override
             public void run(Role role) {
@@ -893,7 +918,7 @@ public class Roles {
             
         }, Skin.pieck, new TitanData(4, 8, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 0), new PotionEffect(PotionEffectType.SPEED, 0, 2), new PotionEffect(PotionEffectType.JUMP, 0, 0), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 0)), new Listener() {}, 180, 300, bow, Skin.cart, 30));
 		
-       reiner = new TitanRole(RolesName.REINER, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+       reiner = new TitanRole(RolesName.REINER, AotUhc.config.isInt("reiner.nb") ? AotUhc.config.getInt("reiner.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
             
             @Override
             public void run(Role role) {
@@ -905,7 +930,7 @@ public class Roles {
             
         }, Skin.reiner, new TitanData(15, 23, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 1), new PotionEffect(PotionEffectType.JUMP, 0, 2), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 3)), new Listener() {}, 75, 390, emptyWeapon, Skin.armorer, 40));
 
-       annie = new TitanRole(RolesName.ANNIE, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+       annie = new TitanRole(RolesName.ANNIE, AotUhc.config.isInt("annie.nb") ? AotUhc.config.getInt("annie.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
            
            @Override
            public void run(Role role) {
@@ -915,9 +940,9 @@ public class Roles {
                
            }
            
-       }, Skin.annie, new TitanData(15, 25, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 3), new PotionEffect(PotionEffectType.JUMP, 0, 3), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1)), new Listener() {}, 75, 390, emptyWeapon, Skin.female, 40)); 
+       }, Skin.annie, new TitanData(15, 25, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 3), new PotionEffect(PotionEffectType.JUMP, 0, 3), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1)), new Listener() {}, 75, 300, emptyWeapon, Skin.female, 40)); 
        
-       bertholdt = new TitanRole(RolesName.BERTOLDT, 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new LimitedUsesListener() {
+       bertholdt = new TitanRole(RolesName.BERTOLDT, AotUhc.config.isInt("bertholdt.nb") ? AotUhc.config.getInt("bertholdt.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new LimitedUsesListener() {
     	   
     	   @EventHandler
     	   public void fireWave(PlayerToggleSneakEvent event) {
@@ -968,12 +993,14 @@ public class Roles {
                
            }
            
-       }, Skin.bertholdt, new TitanData(60, 40, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 5), new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 1), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 2)), new Listener() {}, 60, 720, emptyWeapon, Skin.bertholdt, 40)); 
+       }, Skin.bertholdt, new TitanData(60, 40, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 5), new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 1), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 2), new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0)), new Listener() {}, 60, 720, emptyWeapon, Skin.bertholdt, 60)); 
        
        bertholdt.setTransformRunnable(new RoleRunnable() {
 			
 			@Override
 			public void run(Role role) {
+				
+				role.getPlayer().getWorld().createExplosion(role.getPlayer().getLocation(), 15, true);
 				
 				if(role.isImplemented() && ((LimitedUsesListener) role.getListener()).uses.containsKey(role.getPlayer().getUniqueId())) {
 					
@@ -984,6 +1011,263 @@ public class Roles {
 			}
 			
 		});
+       
+       porco = new TitanRole(RolesName.PORCO, AotUhc.config.isInt("porco.nb") ? AotUhc.config.getInt("porco.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+           
+           @Override
+           public void run(Role role) {
+
+               Player p = role.getPlayer();
+               p.getInventory().setItem(8, AotUhc.titanFlint);
+               
+           }
+           
+       }, Skin.porco, new TitanData(6, 10, Arrays.asList(new PotionEffect(PotionEffectType.SPEED, 0, 3), new PotionEffect(PotionEffectType.JUMP, 0, 3), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 1)), new Listener() {}, 75, 300, emptyWeapon, Skin.jaw, 30));
+       
+       falco = new Role(RolesName.FALCO, AotUhc.config.isInt("falco.nb") ? AotUhc.config.getInt("falco.nb") : 1, Arrays.asList(), new Listener() {
+    	   
+			@EventHandler
+			public void onPlayerMove(PlayerMoveEvent event) {
+				
+				Player p = event.getPlayer();
+				
+				if(GameStorage.gameStarted && GameStorage.roles.containsKey(p.getUniqueId())) {
+					
+					if(GameStorage.roles.get(p.getUniqueId()).getName() == RolesName.GABY) {
+						
+						Role rg = GameStorage.roles.get(p.getUniqueId());
+						Player pg = rg.getPlayer();
+						
+						for(Role r : GameStorage.roles.values()) {
+							
+							if(r.getName().getCamp() != Camps.MAHR) {
+								
+								Player pe = r.getPlayer();
+								
+								if(pe.getLocation().distance(pg.getLocation()) <= 20) {
+									
+									for(Role rf : GameStorage.roles.values()) {
+										
+										if(rf.getName() == RolesName.FALCO) {
+											
+											Player f = rf.getPlayer();
+											
+											f.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0, false, false));
+											f.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
+											
+										}
+										
+									}
+									
+									return;
+									
+								}
+								
+							}
+							
+						}
+						
+						for(Role rf : GameStorage.roles.values()) {
+							
+							if(rf.getName() == RolesName.FALCO) {
+								
+								Player f = rf.getPlayer();
+								
+								if(f.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+									
+									f.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
+									
+								}
+								
+								if(f.hasPotionEffect(PotionEffectType.SPEED)) {
+									
+									f.removePotionEffect(PotionEffectType.SPEED);
+									
+								}
+								
+							}
+							
+						}
+						
+						return;
+						
+					}
+					
+					if(GameStorage.roles.get(p.getUniqueId()).getName().getCamp() != Camps.MAHR) {
+						
+						Role re = GameStorage.roles.get(p.getUniqueId());
+						Player pe = re.getPlayer();
+						
+						for(Role r : GameStorage.roles.values()) {
+							
+							if(r.getName() == RolesName.GABY) {
+								
+								Player pg = r.getPlayer();
+								
+								if(pe.getLocation().distance(pg.getLocation()) <= 20) {
+									
+									for(Role rf : GameStorage.roles.values()) {
+										
+										if(rf.getName() == RolesName.FALCO) {
+											
+											Player f = rf.getPlayer();
+											
+											f.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0, false, false));
+											f.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
+											
+										}
+										
+									}
+									
+									return;
+									
+								}
+								
+							}
+							
+						}
+						
+						for(Role rf : GameStorage.roles.values()) {
+							
+							if(rf.getName() == RolesName.FALCO) {
+								
+								Player f = rf.getPlayer();
+								
+								if(f.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+									
+									f.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
+									
+								}
+								
+								if(f.hasPotionEffect(PotionEffectType.SPEED)) {
+									
+									f.removePotionEffect(PotionEffectType.SPEED);
+									
+								}
+								
+							}
+							
+						}
+						
+						return;
+						
+					}
+					
+				}
+				
+			}
+    	   
+       }, Arrays.asList(), new RoleRunnable() {
+		
+			@Override
+			public void run(Role role) {}
+		
+       }, Skin.falco);
+       
+       gaby = new Role(RolesName.GABY, AotUhc.config.isInt("gaby.nb") ? AotUhc.config.getInt("gaby.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0)), new Listener() {
+
+    	   @EventHandler
+    	   public void onHit(EntityDamageByEntityEvent event) {
+    		   
+    		   if(event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+    			   
+    			   Player victim = (Player) event.getEntity();
+    			   Player damager = (Player) event.getDamager();
+    			   
+    			   if(GameStorage.roles.containsKey(victim.getUniqueId()) && GameStorage.roles.containsKey(damager.getUniqueId())) {
+    				   
+    				   Role vr = GameStorage.roles.get(victim.getUniqueId());
+    				   Role dr = GameStorage.roles.get(damager.getUniqueId());
+    				   
+    				   if(vr.getName() == RolesName.SASHA && dr.getName() == RolesName.GABY) {
+    					   
+    					   double damage = event.getDamage();
+    					   
+    					   event.setCancelled(true);
+    					   
+    					   dr.getPlayer().damage(damage * 2);
+    					   
+    				   }
+    				   
+    			   }
+    			   
+    		   }
+    		   
+    	   }
+       
+       }, Arrays.asList(), new RoleRunnable() {
+		
+			@Override
+			public void run(Role role) {}
+		
+	   }, Skin.gaby);
+       
+       magath = new Role(RolesName.MAGATH, AotUhc.config.isInt("magath.nb") ? AotUhc.config.getInt("magath.nb") : 1, Arrays.asList(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0)), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+		
+		@Override
+		public void run(Role role) {}
+		
+       }, Skin.magath);
+       
+       smiling = new PureTitanRole(RolesName.SMILINGTITAN, AotUhc.config.isInt("smiling.nb") ? AotUhc.config.getInt("smiling.nb") : 1, Arrays.asList(), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+
+    	   @Override
+	       public void run(Role role) {
+
+    		   Player p = role.getPlayer();
+	           p.getInventory().setItem(8, AotUhc.titanFlint);
+	               
+    	   }
+    	   
+       }, Skin.smiling, new PureTitanData(14, 20, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1), new PotionEffect(PotionEffectType.REGENERATION, 0, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 1)), new Listener() {}, Skin.smiling, 40));
+       
+       deviant = new PureTitanRole(RolesName.DEVIANTTITAN, AotUhc.config.isInt("deviant.nb") ? AotUhc.config.getInt("deviant.nb") : 1, Arrays.asList(), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+
+    	   @Override
+	       public void run(Role role) {
+
+    		   Player p = role.getPlayer();
+	           p.getInventory().setItem(8, AotUhc.titanFlint);
+	               
+    	   }
+    	   
+       }, Skin.deviant, new PureTitanData(14, 20, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1), new PotionEffect(PotionEffectType.JUMP, 0, 3), new PotionEffect(PotionEffectType.SPEED, 0, 2), new PotionEffect(PotionEffectType.REGENERATION, 0, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 1)), new Listener() {}, Skin.deviant, 40));
+       
+       small = new PureTitanRole(RolesName.SMALLTITAN, AotUhc.config.isInt("small.nb") ? AotUhc.config.getInt("small.nb") : 1, Arrays.asList(), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+
+    	   @Override
+	       public void run(Role role) {
+
+    		   Player p = role.getPlayer();
+	           p.getInventory().setItem(8, AotUhc.titanFlint);
+	               
+    	   }
+    	   
+       }, Skin.small, new PureTitanData(5, 8, Arrays.asList(new PotionEffect(PotionEffectType.REGENERATION, 0, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 0), new PotionEffect(PotionEffectType.SPEED, 0, 1)), new Listener() {}, Skin.small, 25));
+       
+       medium = new PureTitanRole(RolesName.MEDIUMTITAN, AotUhc.config.isInt("medium.nb") ? AotUhc.config.getInt("medium.nb") : 1, Arrays.asList(), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+
+    	   @Override
+	       public void run(Role role) {
+
+    		   Player p = role.getPlayer();
+	           p.getInventory().setItem(8, AotUhc.titanFlint);
+	               
+    	   }
+    	   
+       }, Skin.medium, new PureTitanData(14, 20, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 0), new PotionEffect(PotionEffectType.REGENERATION, 0, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 1), new PotionEffect(PotionEffectType.SPEED, 0, 0)), new Listener() {}, Skin.medium, 35));
+       
+       great = new PureTitanRole(RolesName.GREATTITAN, AotUhc.config.isInt("great.nb") ? AotUhc.config.getInt("great.nb") : 1, Arrays.asList(), new Listener() {}, Arrays.asList(), new RoleRunnable() {
+
+    	   @Override
+	       public void run(Role role) {
+
+    		   Player p = role.getPlayer();
+	           p.getInventory().setItem(8, AotUhc.titanFlint);
+	               
+    	   }
+    	   
+       }, Skin.great, new PureTitanData(15, 20, Arrays.asList(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 1), new PotionEffect(PotionEffectType.REGENERATION, 0, 0), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0, 2)), new Listener() {}, Skin.great, 40));
        
 	}
 	

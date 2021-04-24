@@ -23,6 +23,10 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import fr.slypy.aotuhc.commands.AotCommand;
 import fr.slypy.aotuhc.recipes.RecipeUtils;
@@ -44,14 +48,13 @@ public class AotUhc extends JavaPlugin {
 	public static AotUhc plugin;
 	public static File configFile;
 	public static FileConfiguration config;
-	public static String prefix = "§2[§6AOT§cUHC§2]§r ";
+	public static String prefix = "§l§6[§aAOT§cUHC§6]§r ";
 	public static ItemStack titanFlint;
+	public static Scoreboard board;
+	public static BukkitTask updateTask = null;
 	
 	@Override	
 	public void onEnable() {
-		
-		Bukkit.getWorlds().get(0).getWorldBorder().setCenter(0, 0);
-		Bukkit.getWorlds().get(0).getWorldBorder().setSize(5000);
 		
 		configFile = new File(this.getDataFolder().getPath() + "/" + "aot.yml");
 		
@@ -79,6 +82,9 @@ public class AotUhc extends JavaPlugin {
 		}
 		
 		plugin = this;
+		
+		Bukkit.getWorlds().forEach(w -> w.getWorldBorder().setCenter(0, 0));
+		Bukkit.getWorlds().forEach(w -> w.getWorldBorder().setSize(config.isInt("worldborder.size.start") ? config.getInt("worldborder.size.start") : 5000));
 		
 		File snkDatapack = new File(Bukkit.getWorldContainer().getPath() + "/" + "world" + "/" + "datapacks" + "/" + "snk.zip");
 		
@@ -123,6 +129,17 @@ public class AotUhc extends JavaPlugin {
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new AotListener(), this);
 		
+		board = Bukkit.getScoreboardManager().getNewScoreboard();
+		Objective health = board.registerNewObjective("health", "health", "§cHealth");
+		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		
+		for(Player online : Bukkit.getOnlinePlayers()){
+			
+			  online.setScoreboard(board);
+			  online.setHealth(online.getHealth());
+			  
+		}
+		
 		AotCommand aotCmd = new AotCommand();
 		
 		this.getCommand("aot").setExecutor(aotCmd);
@@ -152,7 +169,7 @@ public class AotUhc extends JavaPlugin {
 		
 		try {
 			
-			RecipeUtils.addRecipe(this, "aot_sword", result1, new String[] {" I ", " I ", "LDL"}, ingredients1, false, null);
+			RecipeUtils.addRecipe(this, "aot_sword", result1, new String[] {" I ", " I ", "LDL"}, ingredients1, Camps.ELDIA);
 			
 		} catch (Exception e) {
 
@@ -175,7 +192,7 @@ public class AotUhc extends JavaPlugin {
 		
 		try {
 			
-			RecipeUtils.addRecipe(this, "aot_odm", result2, new String[] {"ISI", "ISI", "IDI"}, ingredients2, false, null);
+			RecipeUtils.addRecipe(this, "aot_odm", result2, new String[] {"ISI", "ISI", "IDI"}, ingredients2, Camps.ELDIA); //ELDIA
 			
 		} catch (Exception e) {
 
@@ -195,7 +212,7 @@ public class AotUhc extends JavaPlugin {
 		
 		try {
 			
-			RecipeUtils.addRecipe(this, "thunder_spear", result3, new String[] {"F", "G", "I"}, ingredients3, true, RolesName.HANSI);
+			RecipeUtils.addRecipe(this, "thunder_spear", result3, new String[] {"F", "G", "I"}, ingredients3, RolesName.HANSI); //HANSI
 			
 		} catch (Exception e) {
 
@@ -219,7 +236,7 @@ public class AotUhc extends JavaPlugin {
 		
 		try {
 			
-			RecipeUtils.addRecipe(this, "ultra_aot_sword", result5, new String[] {" I ", " I ", "LDL"}, ingredients5, true, RolesName.ARMIN);
+			RecipeUtils.addRecipe(this, "ultra_aot_sword", result5, new String[] {" I ", " I ", "LDL"}, ingredients5, RolesName.ARMIN); //ARMIN
 			
 		} catch (Exception e) {
 
@@ -235,10 +252,10 @@ public class AotUhc extends JavaPlugin {
 		
 		try {
 			
-			RecipeUtils.addRecipe(this, "blaze_powder", result6, new String[] {"RRR", "RGR", "LLL"}, ingredients6, false, null);
+			RecipeUtils.addRecipe(this, "blaze_powder", result6, new String[] {"RRR", "RGR", "LLL"}, ingredients6);
 			
 		} catch (Exception e) {
-
+			
 			e.printStackTrace();
 			
 		}
@@ -251,7 +268,7 @@ public class AotUhc extends JavaPlugin {
 		
 		try {
 			
-			RecipeUtils.addRecipe(this, "fire_charge", result7, new String[] {"GBG", "BCB", "GBG"}, ingredients7, false, null);
+			RecipeUtils.addRecipe(this, "fire_charge", result7, new String[] {"GBG", "BCB", "GBG"}, ingredients7);
 			
 		} catch (Exception e) {
 
@@ -263,7 +280,46 @@ public class AotUhc extends JavaPlugin {
 
 	}
 	
+	public void refreshScoreboard() {
+		
+		for(Role r : GameStorage.roles.values()) {
+			
+			Player p = r.getPlayer();
+			
+			Scoreboard board = p.getScoreboard();
+			
+			Objective sidebarObjective = board.getObjective(DisplaySlot.SIDEBAR);
+			
+			if(sidebarObjective != null) {
+				
+                sidebarObjective.getScore("§l§r§7=======================").setScore(12);
+                sidebarObjective.getScore("§6§lRole : §r§a" + r.getName()).setScore(11);
+                sidebarObjective.getScore("§k§r§7=======================").setScore(10);
+                sidebarObjective.getScore("§l").setScore(9);
+                sidebarObjective.getScore("§6§lGame Time : §r§a" + GameStorage.getTime()).setScore(8);
+                sidebarObjective.getScore("§6§lPlayers : §r§a" + GameStorage.roles.size()).setScore(7);
+                sidebarObjective.getScore("§r").setScore(6);
+                sidebarObjective.getScore("§6§lKills : §r§a" + GameStorage.kills.get(p.getUniqueId())).setScore(5);
+                sidebarObjective.getScore("§a").setScore(4);
+                sidebarObjective.getScore("§6§lPvp : §r§a" + GameStorage.getPvpState()).setScore(3);
+                sidebarObjective.getScore("§6§lBorder : §r§a" + GameStorage.getBorderState()).setScore(2);
+                sidebarObjective.getScore("§c").setScore(1);
+                sidebarObjective.getScore("§6§lBorder Size : §r§a" + p.getWorld().getWorldBorder().getSize() + " x " + p.getWorld().getWorldBorder().getSize()).setScore(0);
+				
+			}
+			
+		}
+		
+	}
+	
 	public void setDefaultConfig() {
+		
+		config.set("pvp", 600);
+
+		config.set("border.start", 900);
+		config.set("border.end", 1500);
+		config.set("border.size.start", 5000);
+		config.set("border.size.end", 100);
 		
 		config.set("erwin.use", true);
 		config.set("erwin.nb", 1);
@@ -348,9 +404,6 @@ public class AotUhc extends JavaPlugin {
 		config.set("small.use", true);
 		config.set("small.nb", 4);
 		
-		config.set("beard.use", true);
-		config.set("beard.nb", 1);
-		
 		saveAotConfig();
 
 	}
@@ -395,6 +448,126 @@ public class AotUhc extends JavaPlugin {
 			
 		}
 		
+		if(config.isConfigurationSection("hansi") && config.isBoolean("hansi.use") && config.getBoolean("hansi.use")) {
+			
+			RolesRegister.registerRole(Roles.hansi);
+			
+		}
+		
+		if(config.isConfigurationSection("sasha") && config.isBoolean("sasha.use") && config.getBoolean("sasha.use")) {
+			
+			RolesRegister.registerRole(Roles.sasha);
+			
+		}
+		
+		if(config.isConfigurationSection("armin") && config.isBoolean("conny.use") && config.getBoolean("conny.use")) {
+			
+			RolesRegister.registerRole(Roles.conny);
+			
+		}
+		
+		if(config.isConfigurationSection("jean") && config.isBoolean("jean.use") && config.getBoolean("jean.use")) {
+			
+			RolesRegister.registerRole(Roles.jean);
+			
+		}
+		
+		if(config.isConfigurationSection("soldier") && config.isBoolean("soldier.use") && config.getBoolean("soldier.use")) {
+			
+			RolesRegister.registerRole(Roles.soldier);
+			
+		}
+		
+		if(config.isConfigurationSection("zeke") && config.isBoolean("zeke.use") && config.getBoolean("zeke.use")) {
+			
+			RolesRegister.registerRole(Roles.zeke);
+			
+		}
+		
+		if(config.isConfigurationSection("pieck") && config.isBoolean("pieck.use") && config.getBoolean("pieck.use")) {
+			
+			RolesRegister.registerRole(Roles.soldier);
+			
+		}
+		
+		if(config.isConfigurationSection("lara") && config.isBoolean("lara.use") && config.getBoolean("lara.use")) {
+			
+			RolesRegister.registerRole(Roles.lara);
+			
+		}
+		
+		if(config.isConfigurationSection("reiner") && config.isBoolean("reiner.use") && config.getBoolean("reiner.use")) {
+			
+			RolesRegister.registerRole(Roles.reiner);
+			
+		}
+		
+		if(config.isConfigurationSection("annie") && config.isBoolean("annie.use") && config.getBoolean("annie.use")) {
+			
+			RolesRegister.registerRole(Roles.annie);
+			
+		}
+		
+		if(config.isConfigurationSection("bertholdt") && config.isBoolean("bertholdt.use") && config.getBoolean("bertholdt.use")) {
+			
+			RolesRegister.registerRole(Roles.bertholdt);
+			
+		}
+		
+		if(config.isConfigurationSection("porco") && config.isBoolean("porco.use") && config.getBoolean("porco.use")) {
+			
+			RolesRegister.registerRole(Roles.porco);
+			
+		}
+		
+		if(config.isConfigurationSection("falco") && config.isBoolean("falco.use") && config.getBoolean("falco.use")) {
+			
+			RolesRegister.registerRole(Roles.falco);
+			
+		}
+		
+		if(config.isConfigurationSection("gaby") && config.isBoolean("gaby.use") && config.getBoolean("gaby.use")) {
+			
+			RolesRegister.registerRole(Roles.gaby);
+			
+		}
+			
+		if(config.isConfigurationSection("magath") && config.isBoolean("magath.use") && config.getBoolean("magath.use")) {
+			
+			RolesRegister.registerRole(Roles.magath);
+			
+		}
+		
+		if(config.isConfigurationSection("smiling") && config.isBoolean("smiling.use") && config.getBoolean("smiling.use")) {
+			
+			RolesRegister.registerRole(Roles.smiling);
+			
+		}
+		
+		if(config.isConfigurationSection("deviant") && config.isBoolean("deviant.use") && config.getBoolean("deviant.use")) {
+			
+			RolesRegister.registerRole(Roles.deviant);
+			
+		}
+		
+		if(config.isConfigurationSection("small") && config.isBoolean("small.use") && config.getBoolean("small.use")) {
+			
+			RolesRegister.registerRole(Roles.small);
+			
+		}
+		
+		if(config.isConfigurationSection("medium") && config.isBoolean("medium.use") && config.getBoolean("medium.use")) {
+			
+			RolesRegister.registerRole(Roles.medium);
+			
+		}
+		
+		if(config.isConfigurationSection("great") && config.isBoolean("great.use") && config.getBoolean("great.use")) {
+			
+			RolesRegister.registerRole(Roles.great);
+			
+		}
+		
 	}
 	
 	public static void saveAotConfig() {
@@ -404,7 +577,7 @@ public class AotUhc extends JavaPlugin {
 			config.save(configFile);
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		
@@ -440,6 +613,13 @@ public class AotUhc extends JavaPlugin {
 					new Celebrator().celebrate(p);
 					
 				}
+				
+				GameStorage.roles = new HashMap<UUID, Role>();
+				GameStorage.rolesBackup = new HashMap<UUID, Role>();
+				GameStorage.time = 0;
+				GameStorage.kills = new HashMap<UUID, Integer>();
+				GameStorage.pvp = AotUhc.config.isInt("pvp") ? AotUhc.config.getInt("pvp") : 600;
+				GameStorage.border = AotUhc.config.isInt("border.start") ? AotUhc.config.getInt("border.start") : 900;
 				
 			}
 			

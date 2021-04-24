@@ -24,7 +24,17 @@ public class Skin {
 	public static Skin lara = new Skin(Skin.skinsStorageURL + "mahr/lara.png");
 	public static Skin reiner = new Skin(Skin.skinsStorageURL + "mahr/reiner.png");
 	public static Skin annie = new Skin(Skin.skinsStorageURL + "mahr/annie.png");
-	public static Skin bertholdt = new Skin(Skin.skinsStorageURL + "eldia/bertholdt.png");
+	public static Skin bertholdt = new Skin(Skin.skinsStorageURL + "mahr/bertholdt.png");
+	public static Skin porco = new Skin(Skin.skinsStorageURL + "mahr/porco.png");
+	public static Skin falco = new Skin(Skin.skinsStorageURL + "mahr/falco.png");
+	public static Skin gaby = new Skin(Skin.skinsStorageURL + "mahr/gaby.png");
+	public static Skin magath = new Skin(Skin.skinsStorageURL + "mahr/magath.png");
+	
+	public static Skin smiling = new Skin(Skin.skinsStorageURL + "titan/smiling.png");
+	public static Skin deviant = new Skin(Skin.skinsStorageURL + "titan/deviant.png");
+	public static Skin great = new Skin(Skin.skinsStorageURL + "titan/great.png");
+	public static Skin medium = new Skin(Skin.skinsStorageURL + "titan/medium.png");
+	public static Skin small = new Skin(Skin.skinsStorageURL + "titan/small.png");
 	
 	public static Skin assailant = new Skin(Skin.skinsStorageURL + "assailant.png");
 	public static Skin beast = new Skin(Skin.skinsStorageURL + "beast.png");
@@ -33,6 +43,7 @@ public class Skin {
 	public static Skin armorer = new Skin(Skin.skinsStorageURL + "armorer.png");
 	public static Skin female = new Skin(Skin.skinsStorageURL + "female.png");
 	public static Skin colossal = new Skin(Skin.skinsStorageURL + "colossal.png");
+	public static Skin jaw = new Skin(Skin.skinsStorageURL + "jaw.png");
 	
 	String skinPath;
 	

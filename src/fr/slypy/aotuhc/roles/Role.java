@@ -197,4 +197,10 @@ public class Role {
 		
 	}
 	
+	public void startRun() {
+		
+		startRun.run(this);
+		
+	}
+	
 }

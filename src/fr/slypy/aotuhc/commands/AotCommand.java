@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
@@ -15,10 +17,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import fr.slypy.aotuhc.AotUhc;
 import fr.slypy.aotuhc.GameStorage;
 import fr.slypy.aotuhc.roles.Role;
+import fr.slypy.aotuhc.roles.RolesName;
 import fr.slypy.aotuhc.roles.RolesRegister;
 
 public class AotCommand implements CommandExecutor, TabCompleter {
@@ -34,14 +41,28 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 				
 			} else {
 				
+				int totalRoles = 0;
+				
+				for(Role r : RolesRegister.getRoles()) {
+					
+					totalRoles += r.getNb();
+					
+				}
+				
+				if(totalRoles < 12) {
+					
+					sender.sendMessage(AotUhc.prefix + "§cIl n'y a pas assez de roles distribuables pour lancer une partie ! Veuillez en rajouter dans la config.");
+					
+				}
+				
 				Bukkit.broadcastMessage(AotUhc.prefix + "§6Démarage de la partie");
 				
 				List<Player> players = new ArrayList<Player>();
 				Player[] playersArray = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
 				
-				if(Bukkit.getOnlinePlayers().size() >= 40) {
+				if(Bukkit.getOnlinePlayers().size() >= totalRoles) {
 					
-					for(int i = 0; i< 40; i++) {
+					for(int i = 0; i < totalRoles; i++) {
 						
 						players.add(playersArray[i]);
 						
@@ -126,7 +147,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							if(player.isOnline() && GameStorage.roles.containsKey(player.getUniqueId()) && GameStorage.gameStarted) {
 								
 								player.setInvulnerable(false);
-								player.sendMessage(AotUhc.prefix + "§cYou're no longer invulnerable !");
+								player.sendMessage(AotUhc.prefix + "§cVous n'êtes plus invulnérable !");
 								
 							}
 							
@@ -140,11 +161,9 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							
 							int indexMahr = rand.nextInt(rolesMahr.size());
 							
-							player.sendTitle("§2Good Luck !", "§aYou're §6§l" + rolesMahr.get(indexMahr).getName().toString(), 60, 5, 20);
+							player.sendTitle("§2Bonne chance !", "§aTu est §6§l" + rolesMahr.get(indexMahr).getName().toString(), 60, 5, 20);
 							
 							Role playerRoleMahr = rolesMahr.get(indexMahr).implementPlayer(player);
-							
-							playerRoleMahr.getStartRun().run(playerRoleMahr);
 							
 							GameStorage.roles.put(player.getUniqueId(), playerRoleMahr);
 							
@@ -158,11 +177,9 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							
 							int indexEldia = rand.nextInt(rolesEldia.size());
 							
-							player.sendTitle("§2Good Luck !", "§aYou're §6§l" + rolesEldia.get(indexEldia).getName().toString(), 60, 5, 20);
+							player.sendTitle("§2Bonne chance !", "§aTu est §6§l" + rolesEldia.get(indexEldia).getName().toString(), 60, 5, 20);
 							
 							Role playerRoleEldia = rolesEldia.get(indexEldia).implementPlayer(player);
-							
-							playerRoleEldia.getStartRun().run(playerRoleEldia);
 							
 							GameStorage.roles.put(player.getUniqueId(), playerRoleEldia);
 							
@@ -176,11 +193,9 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							
 							int indexTitans = rand.nextInt(rolesTitans.size());
 							
-							player.sendTitle("§2Good Luck !", "§aYou're §6§l" + rolesTitans.get(indexTitans).getName().toString(), 60, 5, 20);
+							player.sendTitle("§2Bonne chance !", "§aTu est §6§l" + rolesTitans.get(indexTitans).getName().toString(), 60, 5, 20);
 							
 							Role playerRoleTitans = rolesTitans.get(indexTitans).implementPlayer(player);
-							
-							playerRoleTitans.getStartRun().run(playerRoleTitans);
 							
 							GameStorage.roles.put(player.getUniqueId(), playerRoleTitans);
 							
@@ -214,7 +229,152 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 			
 			GameStorage.rolesBackup = GameStorage.roles;
 			
+			for(Role r : GameStorage.roles.values()) {
+				
+				GameStorage.kills.put(r.getPlayer().getUniqueId(), 0);
+				
+				r.startRun();
+				
+                Player p = r.getPlayer();
+                
+                Scoreboard playerBoard = AotUhc.board;
+                Objective sidebarObjective;
+                
+                PluginDescriptionFile desc = AotUhc.plugin.getDescription();
+                sidebarObjective = playerBoard.registerNewObjective("aotuhc", "dummy", AotUhc.prefix + "§7[" + desc.getVersion() + "]");
+                
+                sidebarObjective.getScore("§l§r§7=======================").setScore(12);
+                sidebarObjective.getScore("§6§lRole : §r§a" + r.getName()).setScore(11);
+                sidebarObjective.getScore("§k§r§7=======================").setScore(10);
+                sidebarObjective.getScore("§l").setScore(9);
+                sidebarObjective.getScore("§6§lGame Time : §r§a" + GameStorage.getTime()).setScore(8);
+                sidebarObjective.getScore("§6§lPlayers : §r§a" + GameStorage.roles.size()).setScore(7);
+                sidebarObjective.getScore("§r").setScore(6);
+                sidebarObjective.getScore("§6§lKills : §r§a" + GameStorage.kills.get(p.getUniqueId())).setScore(5);
+                sidebarObjective.getScore("§a").setScore(4);
+                sidebarObjective.getScore("§6§lPvp : §r§a" + GameStorage.getPvpState()).setScore(3);
+                sidebarObjective.getScore("§6§lBorder : §r§a" + GameStorage.getBorderState()).setScore(2);
+                sidebarObjective.getScore("§c").setScore(1);
+                sidebarObjective.getScore("§6§lBorder Size : §r§a" + p.getWorld().getWorldBorder().getSize() + " x " + p.getWorld().getWorldBorder().getSize()).setScore(0);
+                
+                sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                
+                p.setScoreboard(playerBoard);
+				
+			}
+			
+			AotUhc.updateTask = Bukkit.getScheduler().runTaskTimer(AotUhc.plugin, new Runnable() {
+				
+				@Override
+				public void run() {
+					
+					GameStorage.time++;
+					
+					if(GameStorage.pvp > 0) {
+						
+						GameStorage.pvp--;
+						
+					}
+					
+					if(GameStorage.border > 0) {
+						
+						GameStorage.border--;
+						
+						if(GameStorage.border == 0) {
+							
+							Bukkit.getWorlds().forEach(w -> w.getWorldBorder().setSize(AotUhc.config.isInt("border.size.end") ? AotUhc.config.getInt("border.size.end") : 50, (AotUhc.config.isInt("border.end") ? AotUhc.config.getInt("border.end") : 900) - GameStorage.time));
+							
+						}
+						
+					}
+					
+					AotUhc.plugin.refreshScoreboard();
+					
+				}
+				
+			}, 0, 20);
+			
+			
+			
 			return true;
+			
+		} else if(args.length == 1 && args[0].equalsIgnoreCase("list")) {
+			
+			if(sender instanceof Player && GameStorage.gameStarted && GameStorage.roles.containsKey(((Player) sender).getUniqueId())) {
+			
+				Map<RolesName, Integer> roles = new HashMap<RolesName, Integer>();
+				
+				for(Role r : GameStorage.roles.values()) {
+					
+					if(!roles.containsKey(r.getName())) {
+						
+						roles.put(r.getName(), 1);
+						
+					} else {
+						
+						roles.put(r.getName(), roles.get(r.getName()) + 1);
+						
+					}
+					
+				}
+				
+				sender.sendMessage(AotUhc.prefix + "§l§6Voici les roles encore en jeu :");
+				
+				for(Entry<RolesName, Integer> entry : roles.entrySet()) {
+					
+					sender.sendMessage("     §6" + entry.getValue() + " §a" + entry.getKey());
+					
+				}
+			
+			}
+			
+		} else if(args.length == 1 && args[0].equalsIgnoreCase("adminlist")) {
+			
+			if(sender instanceof Player && GameStorage.gameStarted) {
+				
+				Map<RolesName, List<Player>> roles = new HashMap<RolesName, List<Player>>();
+				
+				for(Role r : GameStorage.roles.values()) {
+					
+					if(!roles.containsKey(r.getName())) {
+						
+						roles.put(r.getName(), new ArrayList<Player>(Arrays.asList(r.getPlayer())));
+						
+					} else {
+						
+						List<Player> players = roles.get(r.getName());
+						
+						players.add(r.getPlayer());
+						
+						roles.put(r.getName(), players);
+						
+					}
+					
+				}
+				
+				sender.sendMessage(AotUhc.prefix + "§l§6Voici les roles encore en jeu :");
+				
+				for(Entry<RolesName, List<Player>> entry : roles.entrySet()) {
+					
+					String players = "§c";
+					
+					for(Player p : entry.getValue()) {
+						
+						players += p.getName() + "§6, §c";
+						
+					}
+					
+					if(players.length() > 6) {
+						
+						players.substring(0, players.length() - 5);
+						
+					}
+					
+					sender.sendMessage("     §6" + entry.getValue().size() + " §a" + entry.getKey() + " §6(" + players + "§6)");
+					
+				}
+			
+			}
 			
 		}
 		

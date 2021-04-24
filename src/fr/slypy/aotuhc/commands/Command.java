@@ -41,7 +41,7 @@ public class Command {
 			
 			if(disabled) {
 				
-				sender.sendMessage(AotUhc.prefix + "§cVous ne pouvez plus uttiliser cette commande !");
+				sender.sendMessage(AotUhc.prefix + "§cVous ne pouvez pas uttiliser cette commande !");
 				return false;
 				
 			}
@@ -73,9 +73,14 @@ public class Command {
 					
 				}
 			
+				return true;
+				
+			} else {
+				
+				sender.sendMessage(AotUhc.prefix + "§cVous ne pouvez pas uttiliser cette commande !");
+				return false;
+				
 			}
-			
-			return valid;
 			
 		}
 		

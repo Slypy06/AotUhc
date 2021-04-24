@@ -19,10 +19,12 @@ public class TitanRole extends Role {
 
 	public TitanData data;
 	private BukkitTask autoUntransformTask = null;
+	private BukkitTask cooldownTask = null;
+	private BukkitTask damageTask = null;
 	private RoleRunnable transformRunnable;
 	private RoleRunnable untransformRunnable;
 	public boolean transformed;
-	private boolean canTransform = true;
+	private boolean canTransform = false;
 	
 	public TitanRole(RolesName name, int nb, List<PotionEffect> effects, Listener listener, List<Command> commands, RoleRunnable startRun, Skin skin, TitanData data) {
 		
@@ -63,7 +65,7 @@ public class TitanRole extends Role {
 		
 		canTransform = false;
 		
-		Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
+		cooldownTask = Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
 			
 			@Override
 			public void run() {
@@ -82,6 +84,8 @@ public class TitanRole extends Role {
 		
 		Player p = this.getPlayer();
 		
+		p.setInvulnerable(true);
+		
 		data.getSkin().applySkin(p);
 		
 		p.getInventory().setItem(8, data.getTitanWeapon());
@@ -93,6 +97,22 @@ public class TitanRole extends Role {
 		TitanDataChanger.setPlayerHealth(this.getPlayer(), data.getHealth());
 		
 		this.affectTitanEffects();
+		
+		for(Role r : GameStorage.roles.values()) {
+			
+			Player player = r.getPlayer();			
+			
+			if(r.getName() == RolesName.MAGATH) {
+				
+				player.sendMessage(AotUhc.prefix + "§6" + getPlayer().getDisplayName() + " viens de se transformer en titan dans le chunk X : " + getPlayer().getLocation().getChunk().getX() + " Z : " +  getPlayer().getLocation().getChunk().getZ() + " !");
+				
+			} else {
+				
+				player.sendMessage(AotUhc.prefix + "§6 Un titan viens de se transformer !");
+				
+			}
+			
+		}
 		
 		autoUntransformTask = Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
 
@@ -110,6 +130,17 @@ public class TitanRole extends Role {
 		}, data.getTransformTime() * 20);
 		
 		transformRunnable.run(this);
+		
+		Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				
+				p.setInvulnerable(false);
+				
+			}
+			
+		}, 20);
 		
 	}
 	
@@ -214,4 +245,50 @@ public class TitanRole extends Role {
 		
 	}
 	
+	@Override
+	public void startRun() {
+		
+		cooldownTask = Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				if(GameStorage.gameStarted && GameStorage.roles.containsKey(getPlayer().getUniqueId())) {
+				
+					getPlayer().sendMessage(AotUhc.prefix + "§6Tu peut désormais te transformer en titan !");
+					
+					canTransform = true;
+				
+				}
+				
+			}
+			
+		}, data.getCooldown() * 20);
+		
+		getStartRun().run(this);
+		
+	}
+	
+	public void cleanupTask() {
+		
+		if(cooldownTask != null) {
+		
+			cooldownTask.cancel();
+		
+		}
+		
+		if(autoUntransformTask != null && !autoUntransformTask.isCancelled()) {
+		
+			autoUntransformTask.cancel();
+		
+		}
+		
+		if(damageTask != null) {
+			
+			damageTask.cancel();
+			
+		}
+		
+	}
+ 	
 }
