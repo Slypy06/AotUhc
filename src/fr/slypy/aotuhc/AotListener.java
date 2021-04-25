@@ -31,7 +31,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
 import fr.slypy.aotuhc.recipes.AotCampLockedShapedRecipe;
 import fr.slypy.aotuhc.recipes.AotRoleLockedShapedRecipe;
@@ -39,7 +38,6 @@ import fr.slypy.aotuhc.recipes.AotShapedRecipe;
 import fr.slypy.aotuhc.recipes.RecipeUtils;
 import fr.slypy.aotuhc.roles.PureTitanRole;
 import fr.slypy.aotuhc.roles.Role;
-import fr.slypy.aotuhc.roles.Roles;
 import fr.slypy.aotuhc.roles.RolesName;
 import fr.slypy.aotuhc.roles.TitanRole;
 
@@ -195,33 +193,7 @@ public class AotListener implements Listener {
 	@EventHandler
 	public void playerBite(PlayerInteractEvent event) {
 		
-		if(event.getAction() == Action.RIGHT_CLICK_AIR && event.getPlayer().isSneaking() && CraftItemStack.asNMSCopy(event.getItem()).getOrCreateTag().hasKey("aot_titan")) {
-		
-			event.getPlayer().setInvulnerable(true);
-			
-			for(int i = 0; i < 20; i++) {
-				
-				event.getPlayer().getWorld().strikeLightningEffect(event.getPlayer().getLocation());
-	
-			}
-			
-			event.getPlayer().getWorld().createExplosion(event.getPlayer().getLocation(), 15);
-			
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "size set " + (Roles.eren.getData().getSize() / 1.8) + " " + event.getPlayer().getUniqueId());
-		
-			Skin.assailant.applySkin(event.getPlayer());
-			
-			event.getPlayer().setInvulnerable(false);
-			
-			for(PotionEffect effect : Roles.eren.getData().getEffects()) {
-				
-				event.getPlayer().addPotionEffect(new PotionEffect(effect.getType(), 60 * 20, effect.getAmplifier()));
-				
-			}
-			
-		}
-		
-		/*if(event.getAction() == Action.RIGHT_CLICK_AIR && event.getPlayer().isSneaking() && CraftItemStack.asNMSCopy(event.getItem()).getOrCreateTag().hasKey("aot_titan") && GameStorage.gameStarted && GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && (GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole || GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof PureTitanRole)) {
+		if(event.getAction() == Action.RIGHT_CLICK_AIR && event.getPlayer().isSneaking() && CraftItemStack.asNMSCopy(event.getItem()).getOrCreateTag().hasKey("aot_titan") && GameStorage.gameStarted && GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && (GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole || GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof PureTitanRole)) {
 						
 			if(GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole) {
 			
@@ -259,7 +231,7 @@ public class AotListener implements Listener {
 				
 			}
 			
-		}*/
+		}
 		
 	}
 	
