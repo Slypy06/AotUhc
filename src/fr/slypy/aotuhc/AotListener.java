@@ -176,7 +176,7 @@ public class AotListener implements Listener {
 	@EventHandler
 	public void playerCraftFireCharge(CraftItemEvent event) {
 		
-		if(event.getRecipe() != null && event.getRecipe() instanceof CraftShapelessRecipe) { //remove "&& not" at the final version
+		if(event.getRecipe() != null && event.getRecipe() instanceof CraftShapelessRecipe) {
 		
 			CraftShapelessRecipe cRecipe = (CraftShapelessRecipe) event.getRecipe();
 			

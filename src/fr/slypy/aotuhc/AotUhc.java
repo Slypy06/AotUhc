@@ -608,7 +608,7 @@ public class AotUhc extends JavaPlugin {
 				GameStorage.gameStarted = false;
 				
 				Bukkit.broadcastMessage("§6§l=:= §r" + prefix + "§6§lLes §9" + c + " §6ont gagné ! Bravo a eux ! =:=");
-				Bukkit.broadcastMessage("");
+				Bukkit.broadcastMessage("§r");
 				
 				for(UUID uuid : GameStorage.roles.keySet()) {
 					
@@ -619,7 +619,7 @@ public class AotUhc extends JavaPlugin {
 					
 				}
 				
-				Bukkit.broadcastMessage("");
+				Bukkit.broadcastMessage("§r");
 				Bukkit.broadcastMessage("§6§l:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:");
 				
 				GameStorage.roles = new HashMap<UUID, Role>();
