@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -50,7 +51,6 @@ public class AotUhc extends JavaPlugin {
 	public static FileConfiguration config;
 	public static String prefix = "§l§6[§aAOT§cUHC§6]§r ";
 	public static ItemStack titanFlint;
-	public static Scoreboard board;
 	public static BukkitTask updateTask = null;
 	
 	@Override	
@@ -128,17 +128,6 @@ public class AotUhc extends JavaPlugin {
 		}
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new AotListener(), this);
-		
-		board = Bukkit.getScoreboardManager().getNewScoreboard();
-		Objective health = board.registerNewObjective("health", "health", "§cHealth");
-		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		
-		for(Player online : Bukkit.getOnlinePlayers()){
-			
-			  online.setScoreboard(board);
-			  online.setHealth(online.getHealth());
-			  
-		}
 		
 		AotCommand aotCmd = new AotCommand();
 		
@@ -292,6 +281,10 @@ public class AotUhc extends JavaPlugin {
 			
 			if(sidebarObjective != null) {
 				
+				sidebarObjective.unregister();
+                PluginDescriptionFile desc = AotUhc.plugin.getDescription();
+				sidebarObjective = board.registerNewObjective("aotuhc", "dummy", AotUhc.prefix + "§7[" + desc.getVersion() + "]");
+				
                 sidebarObjective.getScore("§l§r§7=======================").setScore(12);
                 sidebarObjective.getScore("§6§lRole : §r§a" + r.getName()).setScore(11);
                 sidebarObjective.getScore("§k§r§7=======================").setScore(10);
@@ -306,6 +299,8 @@ public class AotUhc extends JavaPlugin {
                 sidebarObjective.getScore("§c").setScore(1);
                 sidebarObjective.getScore("§6§lBorder Size : §r§a" + p.getWorld().getWorldBorder().getSize() + " x " + p.getWorld().getWorldBorder().getSize()).setScore(0);
 				
+                sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                
 			}
 			
 		}

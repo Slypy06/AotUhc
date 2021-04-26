@@ -30,6 +30,15 @@ public class TitanRole extends Role {
 		
 		super(name, nb, effects, listener, commands, startRun, skin);
 		this.data = data;
+
+	}
+	
+	private TitanRole(RolesName name, int nb, List<PotionEffect> effects, Listener listener, List<Command> commands, RoleRunnable startRun, Skin skin, TitanData data, Player p) {
+		
+		super(name, nb, effects, listener, commands, startRun, skin);
+		this.data = data;
+		this.p = p;
+		this.implemented = true;
 		
 		transformRunnable = new RoleRunnable() {
 
@@ -242,6 +251,13 @@ public class TitanRole extends Role {
 	public void setUntransformRunnable(RoleRunnable untransformRunnable) {
 		
 		this.untransformRunnable = untransformRunnable;
+		
+	}
+	
+	@Override
+	public Role implementPlayer(Player p) {
+		
+		return new TitanRole(name, nb, effects, listener, commands, startRun, skin, data, p);
 		
 	}
 	

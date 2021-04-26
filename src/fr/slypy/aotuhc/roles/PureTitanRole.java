@@ -29,6 +29,15 @@ public class PureTitanRole extends Role {
 		
 		super(name, nb, effects, listener, commands, startRun, skin);
 		this.data = data;
+
+	}
+	
+	private PureTitanRole(RolesName name, int nb, List<PotionEffect> effects, Listener listener, List<Command> commands, RoleRunnable startRun, Skin skin, PureTitanData data, Player p) {
+		
+		super(name, nb, effects, listener, commands, startRun, skin);
+		this.data = data;
+		this.p = p;
+		this.implemented = true;
 		
 		transformRunnable = new RoleRunnable() {
 			
@@ -138,6 +147,13 @@ public class PureTitanRole extends Role {
 		}
 		
 		data.getEffects().forEach(potion -> this.getPlayer().removePotionEffect(potion.getType()));
+		
+	}
+	
+	@Override
+	public Role implementPlayer(Player p) {
+		
+		return new PureTitanRole(name, nb, effects, listener, commands, startRun, skin, data, p);
 		
 	}
 	

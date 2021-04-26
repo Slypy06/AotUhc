@@ -51,7 +51,7 @@ public class AotListener implements Listener {
 			if(GameStorage.pvp > 0) {
 				
 				event.setCancelled(true);
-				((Player) event.getEntity().getShooter()).sendMessage(AotUhc.prefix + "§cVous ne pouvez pas lancr de lance foudroyante tant que le pvp est désactivé !");
+				((Player) event.getEntity().getShooter()).sendMessage(AotUhc.prefix + "§cVous ne pouvez pas lancer de lance foudroyante tant que le pvp est désactivé !");
 				
 			}
 			
@@ -192,7 +192,7 @@ public class AotListener implements Listener {
 	
 	@EventHandler
 	public void playerBite(PlayerInteractEvent event) {
-		
+				
 		if(event.getAction() == Action.RIGHT_CLICK_AIR && event.getPlayer().isSneaking() && CraftItemStack.asNMSCopy(event.getItem()).getOrCreateTag().hasKey("aot_titan") && GameStorage.gameStarted && GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && (GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole || GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof PureTitanRole)) {
 						
 			if(GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole) {
@@ -364,9 +364,6 @@ public class AotListener implements Listener {
 			
 		}, 60);
 		
-		event.getPlayer().setScoreboard(AotUhc.board);
-		event.getPlayer().setHealth(event.getPlayer().getHealth());
-		
 	}
 	
 	@EventHandler
@@ -398,7 +395,11 @@ public class AotListener implements Listener {
 			
 			for(ItemStack stack : playerInv.getContents()) {
 				
-				event.getPlayer().getWorld().dropItemNaturally(deathLoc, stack);
+				if(stack != null) {
+				
+					event.getPlayer().getWorld().dropItemNaturally(deathLoc, stack);
+				
+				}
 				
 			}
 			

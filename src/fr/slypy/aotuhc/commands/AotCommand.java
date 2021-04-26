@@ -35,11 +35,13 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 		
 		if(args.length == 1 && args[0].equalsIgnoreCase("start")) {
 			
-			if(Bukkit.getOnlinePlayers().size() < 10) {
+			if(Bukkit.getOnlinePlayers().size() < 4) {
 				
 				sender.sendMessage(AotUhc.prefix + "§cIl n'y a pas assez de joueurs pour lancer une partie !");
 				
 			} else {
+				
+				GameStorage.gameStarted = true;
 				
 				int totalRoles = 0;
 				
@@ -49,7 +51,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 					
 				}
 				
-				if(totalRoles < 12) {
+				if(totalRoles < 6) {
 					
 					sender.sendMessage(AotUhc.prefix + "§cIl n'y a pas assez de roles distribuables pour lancer une partie ! Veuillez en rajouter dans la config.");
 					
@@ -161,7 +163,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							
 							int indexMahr = rand.nextInt(rolesMahr.size());
 							
-							player.sendTitle("§2Bonne chance !", "§aTu est §6§l" + rolesMahr.get(indexMahr).getName().toString(), 60, 5, 20);
+							player.sendTitle("§2Bonne chance !", "§aTu es §6§l" + rolesMahr.get(indexMahr).getName().toString(), 60, 5, 20);
 							
 							Role playerRoleMahr = rolesMahr.get(indexMahr).implementPlayer(player);
 							
@@ -177,7 +179,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							
 							int indexEldia = rand.nextInt(rolesEldia.size());
 							
-							player.sendTitle("§2Bonne chance !", "§aTu est §6§l" + rolesEldia.get(indexEldia).getName().toString(), 60, 5, 20);
+							player.sendTitle("§2Bonne chance !", "§aTu es §6§l" + rolesEldia.get(indexEldia).getName().toString(), 60, 5, 20);
 							
 							Role playerRoleEldia = rolesEldia.get(indexEldia).implementPlayer(player);
 							
@@ -193,7 +195,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 							
 							int indexTitans = rand.nextInt(rolesTitans.size());
 							
-							player.sendTitle("§2Bonne chance !", "§aTu est §6§l" + rolesTitans.get(indexTitans).getName().toString(), 60, 5, 20);
+							player.sendTitle("§2Bonne chance !", "§aTu es §6§l" + rolesTitans.get(indexTitans).getName().toString(), 60, 5, 20);
 							
 							Role playerRoleTitans = rolesTitans.get(indexTitans).implementPlayer(player);
 							
@@ -237,7 +239,12 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 				
                 Player p = r.getPlayer();
                 
-                Scoreboard playerBoard = AotUhc.board;
+                Scoreboard playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+                
+                playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+        		Objective health = playerBoard.registerNewObjective("health", "health", "§cHealth");
+        		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
+                
                 Objective sidebarObjective;
                 
                 PluginDescriptionFile desc = AotUhc.plugin.getDescription();
@@ -260,6 +267,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
                 sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
                 
                 p.setScoreboard(playerBoard);
+                p.setHealth(p.getHealth());
 				
 			}
 			
@@ -294,13 +302,11 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 				
 			}, 0, 20);
 			
-			
-			
 			return true;
 			
 		} else if(args.length == 1 && args[0].equalsIgnoreCase("list")) {
 			
-			if(sender instanceof Player && GameStorage.gameStarted && GameStorage.roles.containsKey(((Player) sender).getUniqueId())) {
+			if(sender instanceof Player && GameStorage.gameStarted) {
 			
 				Map<RolesName, Integer> roles = new HashMap<RolesName, Integer>();
 				
@@ -326,11 +332,15 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 					
 				}
 			
+			} else {
+				
+				sender.sendMessage(AotUhc.prefix + "§cLa partie n'a pas commencée !");
+				
 			}
 			
 		} else if(args.length == 1 && args[0].equalsIgnoreCase("adminlist")) {
 			
-			if(sender instanceof Player && GameStorage.gameStarted) {
+			if(sender instanceof Player && GameStorage.gameStarted && sender.isOp()) {
 				
 				Map<RolesName, List<Player>> roles = new HashMap<RolesName, List<Player>>();
 				
@@ -435,7 +445,19 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 			
 			}
 			
-			if(!GameStorage.gameStarted) {
+			if(GameStorage.gameStarted) {
+				
+				if("list".contains(args[0])) {
+					
+					list.add("list");
+					
+				}
+				
+				if("adminlist".contains(args[0])) {
+					
+					list.add("adminlist");
+					
+				}
 				
 				for(Role role : RolesRegister.getRoles()) {
 					
@@ -453,7 +475,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 				
 			}
 			
-		} else if(!GameStorage.gameStarted && args.length >= 2) {
+		} else if(GameStorage.gameStarted && args.length >= 2) {
 			
 			for(Role role : RolesRegister.getRoles()) {
 				

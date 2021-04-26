@@ -1169,6 +1169,12 @@ public class Roles {
     	   @EventHandler
     	   public void onHit(EntityDamageByEntityEvent event) {
     		   
+    		   if(GameStorage.pvp > 0) {
+    			   
+    			   return;
+    			   
+    		   }
+    		   
     		   if(event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
     			   
     			   Player victim = (Player) event.getEntity();
