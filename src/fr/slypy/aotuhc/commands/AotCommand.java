@@ -264,7 +264,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
                 sidebarObjective.getScore("§6§lPvp : §r§a" + GameStorage.getPvpState()).setScore(3);
                 sidebarObjective.getScore("§6§lBorder : §r§a" + GameStorage.getBorderState()).setScore(2);
                 sidebarObjective.getScore("§c").setScore(1);
-                sidebarObjective.getScore("§6§lBorder Size : §r§a" + p.getWorld().getWorldBorder().getSize() + " x " + p.getWorld().getWorldBorder().getSize()).setScore(0);
+                sidebarObjective.getScore("§6§lBorder Size : §r§a" + (int) p.getWorld().getWorldBorder().getSize() + " x " + (int) p.getWorld().getWorldBorder().getSize()).setScore(0);
                 
                 sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
                 
