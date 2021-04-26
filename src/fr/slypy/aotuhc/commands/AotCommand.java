@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -136,7 +135,10 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 					
 					player.setGameMode(GameMode.SURVIVAL);
 					player.getInventory().clear();
-					player.teleport(new Location(players.get(i).getWorld(), 2000 * Math.cos(Math.toRadians(i * 9)), 255.0F, 2000 * Math.sin(Math.toRadians(i * 9))));
+					
+					double a = 360 / players.size();
+					
+					player.teleport(player.getWorld().getHighestBlockAt(2000 * (int) Math.cos(Math.toRadians((double) i * a)), 2000 * (int) Math.sin(Math.toRadians((double) i * a))).getLocation());
 					player.setInvulnerable(true);
 					
 					player.sendMessage(AotUhc.prefix + "§6You're invulnerable for 60s !");
