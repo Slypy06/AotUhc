@@ -29,13 +29,16 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import fr.slypy.aotuhc.commands.AotBetaCommand;
 import fr.slypy.aotuhc.commands.AotCommand;
 import fr.slypy.aotuhc.recipes.RecipeUtils;
 import fr.slypy.aotuhc.roles.Camps;
+import fr.slypy.aotuhc.roles.PureTitanRole;
 import fr.slypy.aotuhc.roles.Role;
 import fr.slypy.aotuhc.roles.Roles;
 import fr.slypy.aotuhc.roles.RolesName;
 import fr.slypy.aotuhc.roles.RolesRegister;
+import fr.slypy.aotuhc.roles.TitanRole;
 //import mkremins.fanciful.FancyMessage;
 
 public class AotUhc extends JavaPlugin {
@@ -52,6 +55,7 @@ public class AotUhc extends JavaPlugin {
 	public static String prefix = "§l§6[§aAOT§cUHC§6]§r ";
 	public static ItemStack titanFlint;
 	public static BukkitTask updateTask = null;
+	public LimitedUsesListener laraListener;
 	
 	@Override	
 	public void onEnable() {
@@ -128,18 +132,25 @@ public class AotUhc extends JavaPlugin {
 		}
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new AotListener(), this);
+		laraListener = new LaraListener();
+		Bukkit.getServer().getPluginManager().registerEvents(laraListener, this);
 		
 		AotCommand aotCmd = new AotCommand();
 		
 		this.getCommand("aot").setExecutor(aotCmd);
 		this.getCommand("aot").setTabCompleter(aotCmd);
+		
+		AotBetaCommand aotBetaCmd = new AotBetaCommand();
+		
+		this.getCommand("aotbeta").setExecutor(aotBetaCmd);
+		this.getCommand("aotbeta").setTabCompleter(aotBetaCmd);
 	
 		net.minecraft.server.v1_16_R3.ItemStack stack = CraftItemStack.asNMSCopy(new ItemStack(Material.FLINT));
-		stack.getOrCreateTag().setInt("aot_bite", 1);
+		stack.getOrCreateTag().setInt("aot_titan", 1);
 		titanFlint = CraftItemStack.asBukkitCopy(stack);
 		ItemMeta meta = titanFlint.getItemMeta();
 		meta.setDisplayName("§2TRANSFORM");
-		meta.setLore(Arrays.asList("§r§7Shift + right click in air to transform", "yourself into a titan !"));
+		meta.setLore(Arrays.asList("§r§7Shift + right click in air to transform", "§r§7yourself into a titan !"));
 		titanFlint.setItemMeta(meta);
 		
 		ItemStack result1 = new ItemStack(Material.CARROT_ON_A_STICK);
@@ -614,10 +625,24 @@ public class AotUhc extends JavaPlugin {
 					
 					GameStorage.roles.get(uuid).removeEffects();
 					
+					if(GameStorage.roles.get(uuid) instanceof TitanRole) {
+						
+						((TitanRole) GameStorage.roles.get(uuid)).destroy();
+						
+					} else if(GameStorage.roles.get(uuid) instanceof PureTitanRole) {
+						
+						((PureTitanRole) GameStorage.roles.get(uuid)).destroy();
+						
+					}
+					
+					Skin.resetSkin(p);
+					
 				}
 				
 				Bukkit.broadcastMessage("§r");
 				Bukkit.broadcastMessage("§6§l:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:");
+				
+				updateTask.cancel();
 				
 				GameStorage.roles = new HashMap<UUID, Role>();
 				GameStorage.rolesBackup = new HashMap<UUID, Role>();

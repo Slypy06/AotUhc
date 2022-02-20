@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftShapedRecipe;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftShapelessRecipe;
@@ -25,12 +26,15 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import fr.slypy.aotuhc.recipes.AotCampLockedShapedRecipe;
 import fr.slypy.aotuhc.recipes.AotRoleLockedShapedRecipe;
@@ -40,6 +44,7 @@ import fr.slypy.aotuhc.roles.PureTitanRole;
 import fr.slypy.aotuhc.roles.Role;
 import fr.slypy.aotuhc.roles.RolesName;
 import fr.slypy.aotuhc.roles.TitanRole;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
 
 public class AotListener implements Listener {
 
@@ -48,7 +53,7 @@ public class AotListener implements Listener {
 		
 		if(event.getEntityType() == EntityType.TRIDENT && event.getEntity().getShooter() instanceof Player) {
 			
-			if(GameStorage.pvp > 0) {
+			if(GameStorage.pvp > 0 && !((Player) event.getEntity().getShooter()).isOp()) {
 				
 				event.setCancelled(true);
 				((Player) event.getEntity().getShooter()).sendMessage(AotUhc.prefix + "§cVous ne pouvez pas lancer de lance foudroyante tant que le pvp est désactivé !");
@@ -110,7 +115,7 @@ public class AotListener implements Listener {
 		
 		if(event.getCause() == DamageCause.BLOCK_EXPLOSION && event.getEntity() instanceof Player) {
 
-			event.setDamage(event.getDamage() / 4);
+			event.setDamage(event.getDamage() / 2);
 			
 		}
 		
@@ -201,16 +206,8 @@ public class AotListener implements Listener {
 				
 				if(!role.isTransformed()) {
 					
-					for(int i = 0; i < 20; i++) {
-					
-						event.getPlayer().getWorld().strikeLightningEffect(event.getPlayer().getLocation());
-		
-					}
-					
-					event.getPlayer().getWorld().createExplosion(event.getPlayer().getLocation(), role.getData().getSize());
-					
 					role.transform();
-				
+					
 				}
 			
 			} else {
@@ -218,12 +215,6 @@ public class AotListener implements Listener {
 				PureTitanRole role = (PureTitanRole) GameStorage.roles.get(event.getPlayer().getUniqueId());
 				
 				if(!role.isTransformed()) {
-					
-					for(int i = 0; i < 20; i++) {
-					
-						event.getPlayer().getWorld().strikeLightningEffect(event.getPlayer().getLocation());
-		
-					}
 					
 					role.transform();
 				
@@ -277,7 +268,7 @@ public class AotListener implements Listener {
 	@EventHandler
 	public void playerUntransform(PlayerInteractEvent event) {
 		
-		if((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getPlayer().isSneaking() && CraftItemStack.asNMSCopy(event.getItem()).getOrCreateTag().hasKey("aot_titan") && GameStorage.gameStarted && GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole && event.getPlayer().getLocation().getPitch() >= 75) {
+		if((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.getPlayer().isSneaking() && CraftItemStack.asNMSCopy(event.getItem()).getOrCreateTag().hasKey("aot_titan") && GameStorage.gameStarted && GameStorage.roles.containsKey(event.getPlayer().getUniqueId()) && GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole && event.getPlayer().getLocation().getPitch() >= 75) {
 						
 			TitanRole role = (TitanRole) GameStorage.roles.get(event.getPlayer().getUniqueId());
 			
@@ -375,13 +366,13 @@ public class AotListener implements Listener {
 			
 			if(GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof TitanRole) {
 				
-				((TitanRole) GameStorage.roles.get(event.getPlayer().getUniqueId())).cleanupTask();
+				((TitanRole) GameStorage.roles.get(event.getPlayer().getUniqueId())).destroy();
 				
 			}
 			
 			if(GameStorage.roles.get(event.getPlayer().getUniqueId()) instanceof PureTitanRole) {
 				
-				((PureTitanRole) GameStorage.roles.get(event.getPlayer().getUniqueId())).cleanupTask();
+				((PureTitanRole) GameStorage.roles.get(event.getPlayer().getUniqueId())).destroy();
 				
 			}
 			
@@ -419,21 +410,23 @@ public class AotListener implements Listener {
 	
 	@EventHandler
 	public void playerDeath(PlayerDeathEvent event) {
-		
+
 		if(GameStorage.gameStarted && GameStorage.roles.containsKey(event.getEntity().getUniqueId())) {
-			
+
 			Player p = event.getEntity();
 			Role r = GameStorage.roles.get(p.getUniqueId());
 			
+			Skin.resetSkin(p);
+			
 			if(r instanceof TitanRole) {
 				
-				((TitanRole) r).cleanupTask();
+				((TitanRole) r).destroy();
 				
 			}
 			
 			if(r instanceof PureTitanRole) {
 				
-				((PureTitanRole) r).cleanupTask();
+				((PureTitanRole) r).destroy();
 				
 			}
 			
@@ -455,7 +448,11 @@ public class AotListener implements Listener {
 				
 				Bukkit.broadcastMessage(AotUhc.prefix + "§a" + r.getName() + " §6(§c" + p.getName() + "§6) a été tué par §a" + kr.getName() + (kr.isReveal() ? " (§c" + k.getName() + "§6) " : " §6") + "!");
 				
-			}	
+			} else {
+				
+				Bukkit.broadcastMessage(AotUhc.prefix + "§a" + r.getName() + " §6(§c" + p.getName() + "§6) est mort !");
+				
+			}
 			
 		}
 		
@@ -471,6 +468,53 @@ public class AotListener implements Listener {
 				event.setCancelled(true);
 				
 			}
+			
+		}
+		
+	}
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void fallDamage(EntityDamageEvent event) {
+		
+		try {
+		
+			if(event.getEntity() instanceof Player && event.getCause().equals(DamageCause.FALL)) {
+				
+				int gravity = ((Player) event.getEntity()).getScoreboard().getObjective("gravity").getScore((Player) event.getEntity()).getScore();
+				
+				System.out.println(gravity);
+				
+				if(event.getDamage() <= gravity) {
+					
+					event.setCancelled(true);
+					
+				} else {
+					
+					event.setDamage(event.getDamage() - gravity);
+					
+				}
+				
+			}
+		
+		} catch (NullPointerException e) {
+			
+			
+			
+		}
+		
+	}
+	
+	@EventHandler
+	public void changeMainHandItem(PlayerItemHeldEvent event) {
+		
+		if(event.getPlayer().getInventory().getItem(event.getNewSlot()) != null && (event.getPlayer().getInventory().getItem(event.getNewSlot()).getItemMeta().getDisplayName().equals("§8§lUltra Hard Steel Sword") || event.getPlayer().getInventory().getItem(event.getNewSlot()).getItemMeta().getDisplayName().equals("§7§lHard Steel Sword"))) {
+			
+			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 2));
+			
+		} else if(event.getPlayer().getInventory().getItem(event.getPreviousSlot()) != null && (event.getPlayer().getInventory().getItem(event.getPreviousSlot()).getItemMeta().getDisplayName().equals("§8§lUltra Hard Steel Sword") || event.getPlayer().getInventory().getItem(event.getPreviousSlot()).getItemMeta().getDisplayName().equals("§7§lHard Steel Sword"))) {
+			
+			event.getPlayer().removePotionEffect(PotionEffectType.SLOW_DIGGING);
 			
 		}
 		

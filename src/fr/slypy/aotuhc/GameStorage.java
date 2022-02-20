@@ -22,9 +22,8 @@ public class GameStorage {
         int s = (int) (tempTime % 60);
         int m = (int) (Math.floorDiv(tempTime, 60) % 60);
         int h = (int) Math.floorDiv(Math.floorDiv(tempTime, 60), 60);
-
         
-        return h + ":" + m + ":" + s;
+        return String.format("%02d", h) + ":" + String.format("%02d", m) + ":" + String.format("%02d", s);
         
     }
     
@@ -38,7 +37,7 @@ public class GameStorage {
         int h = (int) Math.floorDiv(Math.floorDiv(tempTime, 60), 60);
 
         
-        return pvp == 0 ? "On" : h + ":" + m + ":" + s;
+        return pvp == 0 ? "On" : String.format("%02d", h) + ":" + String.format("%02d", m) + ":" + String.format("%02d", s);
         
     }
     
@@ -51,7 +50,7 @@ public class GameStorage {
         int h = (int) Math.floorDiv(Math.floorDiv(tempTime, 60), 60);
 
         
-        return border == 0 ? "On" : h + ":" + m + ":" + s;
+        return border == 0 ? "On" : String.format("%02d", h) + ":" + String.format("%02d", m) + ":" + String.format("%02d", s);
         
     }
 	

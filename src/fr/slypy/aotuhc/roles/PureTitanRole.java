@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
@@ -29,15 +30,6 @@ public class PureTitanRole extends Role {
 		
 		super(name, nb, effects, listener, commands, startRun, skin);
 		this.data = data;
-
-	}
-	
-	private PureTitanRole(RolesName name, int nb, List<PotionEffect> effects, Listener listener, List<Command> commands, RoleRunnable startRun, Skin skin, PureTitanData data, Player p) {
-		
-		super(name, nb, effects, listener, commands, startRun, skin);
-		this.data = data;
-		this.p = p;
-		this.implemented = true;
 		
 		transformRunnable = new RoleRunnable() {
 			
@@ -45,6 +37,17 @@ public class PureTitanRole extends Role {
 			public void run(Role role) {}
 			
 		};
+
+	}
+	
+	private PureTitanRole(RolesName name, int nb, List<PotionEffect> effects, Listener listener, List<Command> commands, RoleRunnable startRun, Skin skin, PureTitanData data, Player p, RoleRunnable transformRunnable) {
+		
+		super(name, nb, effects, listener, commands, startRun, skin);
+		this.data = data;
+		this.p = p;
+		this.implemented = true;
+		
+		this.transformRunnable = transformRunnable;
 
 	}
 	
@@ -64,6 +67,16 @@ public class PureTitanRole extends Role {
 			
 		}
 		
+		p.setInvulnerable(true);
+		
+		for(int i = 0; i < 20; i++) {
+			
+			p.getWorld().strikeLightningEffect(p.getLocation());
+
+		}
+		
+		p.getWorld().createExplosion(p.getLocation(), getData().getSize());
+		
 		this.getPlayer().getInventory().setItem(8, null);
 		
 		data.getSkin().applySkin(this.getPlayer());
@@ -76,13 +89,21 @@ public class PureTitanRole extends Role {
 		
 		this.affectTitanEffects();
 		
+		if(!isReveal()) {
+			
+			p.setDisplayName(getName().name());
+			p.setCustomName(getName().name());
+			p.setPlayerListName(getName().name());
+			
+		}
+ 		
 		for(Role r : GameStorage.roles.values()) {
 			
 			Player player = r.getPlayer();			
 			
 			if(r.getName() == RolesName.MAGATH) {
 				
-				player.sendMessage(AotUhc.prefix + "§6" + getPlayer().getDisplayName() + " viens de se transformer en titan dans le chunk X : " + getPlayer().getLocation().getChunk().getX() + " Z : " +  getPlayer().getLocation().getChunk().getZ() + " !");
+				player.sendMessage(AotUhc.prefix + "§6" + getName().name() + " viens de se transformer en titan dans le chunk X : " + getPlayer().getLocation().getChunk().getX() + " Z : " +  getPlayer().getLocation().getChunk().getZ() + " !");
 				
 			} else {
 				
@@ -93,6 +114,17 @@ public class PureTitanRole extends Role {
 		}
 		
 		transformRunnable.run(this);
+		
+		Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				
+				p.setInvulnerable(false);
+				
+			}
+			
+		}, 20);
 		
 	}
 
@@ -150,10 +182,46 @@ public class PureTitanRole extends Role {
 		
 	}
 	
+	public void destroy() {
+		
+		if(!this.isImplemented()) {
+			
+			return;
+			
+		}
+		
+		if(isTransformed()) {
+			
+			removeTitanEffects();
+			TitanDataChanger.resetPlayerHealth(p);
+			TitanDataChanger.resetPlayerReach(p);
+			TitanDataChanger.resetPlayerSize(p);
+			Skin.resetSkin(p);
+			
+			p.setDisplayName(p.getName());
+			p.setCustomName(p.getName());
+			p.setPlayerListName(p.getName());
+			
+		}
+		
+		if(cooldownTask != null) {
+			
+			cooldownTask.cancel();
+		
+		}
+		
+		if(damageTask != null) {
+			
+			damageTask.cancel();
+			
+		}
+		
+	}
+	
 	@Override
 	public Role implementPlayer(Player p) {
 		
-		return new PureTitanRole(name, nb, effects, listener, commands, startRun, skin, data, p);
+		return new PureTitanRole(name, nb, effects, listener, commands, startRun, skin, data, p, transformRunnable);
 		
 	}
 	
@@ -182,21 +250,23 @@ public class PureTitanRole extends Role {
 			@Override
 			public void run() {
 				
-		        for(Role r : GameStorage.roles.values()) {
+				System.out.println("damage");
+				
+		        for(LivingEntity r : p.getWorld().getLivingEntities()) {
 
 		            if(transformed) {
 
-		                double size = (r instanceof TitanRole ? ((TitanRole) r).getData().getSize() : r instanceof PureTitanRole ? ((PureTitanRole) r).getData().getSize() : 1.8D);
+		                double size = r.getHeight();
 		                double titanSize = data.getSize();
 
 		                if(size <= titanSize / 3.0D) {
 
-		                    Location loc = r.getPlayer().getLocation();
+		                    Location loc = r.getLocation();
 		                    Location titanLoc = p.getLocation();
 
 		                    if(loc.getX() >= titanLoc.getX() - (((data.getSize() * 0.6D) / 2.0D) + 1) && loc.getX() <= titanLoc.getX() + (((data.getSize() * 0.6D) / 2.0D) + 1) && loc.getZ() >= titanLoc.getZ() - (((data.getSize() * 0.6D) / 2.0D) + 1) && loc.getZ() <= titanLoc.getZ() + (((data.getSize() * 0.6D) / 2.0D) + 1) && loc.getY() >= titanLoc.getY() - (r instanceof TitanRole ? ((TitanRole) r).getData().getSize() : r instanceof PureTitanRole ? ((PureTitanRole) r).getData().getSize() : 1.8D) && loc.getY() <= titanLoc.getY() + data.getSize() / 4.0D) {
 
-		                        r.getPlayer().damage(((int) (titanSize / size)) / 2);
+		                        r.damage(((int) (titanSize / size)) / 2);
 
 		                    }
 
@@ -225,6 +295,24 @@ public class PureTitanRole extends Role {
 		if(damageTask != null) {
 			
 			cooldownTask.cancel();
+		
+		}
+		
+	}
+	
+	public void cancelCooldown() {
+		
+		if(cooldownTask != null) {
+			
+			cooldownTask.cancel();
+		
+		}
+		
+		if(GameStorage.gameStarted && GameStorage.roles.containsKey(getPlayer().getUniqueId())) {
+			
+			getPlayer().sendMessage(AotUhc.prefix + "§6Tu peut a nouveau te transformer en titan !");
+			
+			canTransform = true;
 		
 		}
 		

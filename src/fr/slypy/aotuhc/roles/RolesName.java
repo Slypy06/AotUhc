@@ -19,7 +19,7 @@ public enum RolesName {
 	LARA(Camps.MAHR, "Lara"), //ok
 	REINER(Camps.MAHR, "Reiner"), //ok
 	ANNIE(Camps.MAHR, "Annie"), //ok
-	BERTOLDT(Camps.MAHR, "Bertholdt"), //ok
+	BERTHOLDT(Camps.MAHR, "Bertholdt"), //ok
 	PORCO(Camps.MAHR, "Porco"), //ok
 	MAGATH(Camps.MAHR, "Magath"), //ok
 	GABY(Camps.MAHR, "Gaby"), //ok

@@ -10,7 +10,7 @@ public class TitanDataChanger {
 	
 	public static void setPlayerSize(Player p, float size) {
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "size " + (size / 1.8) + " " + p.getUniqueId());
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "size set " + (size / 1.8) + " " + p.getUniqueId());
 		
 		BoundingBox box = new BoundingBox(p.getLocation().getX() - (((size / 1.8) * 0.6) / 2), p.getLocation().getY(), p.getLocation().getZ() - (((size / 1.8) * 0.6) / 2), p.getLocation().getX() + (((size / 1.8) * 0.6) / 2), p.getLocation().getY() + size, p.getLocation().getZ() + (((size / 1.8) * 0.6) / 2));
 		
@@ -24,13 +24,13 @@ public class TitanDataChanger {
 	
 	public static void setPlayerReach(Player p, float reach) {
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reach " + reach + " " + p.getUniqueId());
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reach set " + reach + " " + p.getUniqueId());
 		
 	}
 	
 	public static void resetPlayerSize(Player p) {
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "size 1 " + p.getUniqueId());
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "size set 1 " + p.getUniqueId());
 		
 		BoundingBox box = new BoundingBox(p.getLocation().getX() - 0.3, p.getLocation().getY(), p.getLocation().getZ() - 0.3, p.getLocation().getX() + 0.3, p.getLocation().getY() + 1.8, p.getLocation().getZ() + 0.3);
 		
@@ -44,7 +44,7 @@ public class TitanDataChanger {
 	
 	public static void resetPlayerReach(Player p) {
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reach 4.5 " + p.getUniqueId());
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reach set 4.5 " + p.getUniqueId());
 		
 	}
 	

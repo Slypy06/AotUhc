@@ -67,14 +67,14 @@ public class Skin {
 
 	public void applySkin(Player p) {
 		
-		System.out.println("skin player " + p.getUniqueId() + " set " + skinPath);
+		//System.out.println("skin player " + p.getUniqueId() + " set " + skinPath);
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "skin player " + p.getUniqueId() + " set " + skinPath);
 		
 	}
 	
 	public static void resetSkin(Player p) {
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "skin player " + p.getUniqueId() + " clear");
+		Bukkit.dispatchCommand(p, "skin clear");
 		
 	}
 	

@@ -7,3 +7,5 @@ api-version: 1.16
 commands:
   aot:
     permission: aotuhc.aot.use
+  aotbeta:
+    permission: aotuhc.aot.use

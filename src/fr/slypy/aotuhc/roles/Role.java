@@ -160,6 +160,14 @@ public class Role {
 		
 		effects.forEach(potion -> this.getPlayer().removePotionEffect(potion.getType()));
 		
+		if(isReveal()) {
+			
+			p.setDisplayName(p.getName());
+			p.setCustomName(p.getName());
+			p.setPlayerListName(p.getName());
+			
+		}
+		
 	}
 	
 	public boolean isReveal() {
@@ -177,6 +185,8 @@ public class Role {
 		}
 		
 		p.setDisplayName(p.getName() + " (" + getName() + ")");
+		p.setCustomName(p.getName() + " (" + getName() + ")");
+		p.setPlayerListName(p.getName() + " (" + getName() + ")");
 		skin.applySkin(p);
 		
 	}

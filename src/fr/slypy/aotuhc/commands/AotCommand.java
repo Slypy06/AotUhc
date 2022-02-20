@@ -1,5 +1,7 @@
 package fr.slypy.aotuhc.commands;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,9 +23,13 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.google.gson.Gson;
 import fr.slypy.aotuhc.AotUhc;
 import fr.slypy.aotuhc.GameStorage;
+import fr.slypy.aotuhc.json.JsonRole;
+import fr.slypy.aotuhc.json.JsonStart;
 import fr.slypy.aotuhc.roles.Role;
+import fr.slypy.aotuhc.roles.Roles;
 import fr.slypy.aotuhc.roles.RolesName;
 import fr.slypy.aotuhc.roles.RolesRegister;
 
@@ -34,7 +40,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 		
 		if(args.length == 1 && args[0].equalsIgnoreCase("start")) {
 			
-			if(Bukkit.getOnlinePlayers().size() < 4) {
+			if(Bukkit.getOnlinePlayers().size() < 4	 && !sender.isOp()) {
 				
 				sender.sendMessage(AotUhc.prefix + "§cIl n'y a pas assez de joueurs pour lancer une partie !");
 				
@@ -229,82 +235,82 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 					
 				}
 				
-			}
-			
-			GameStorage.rolesBackup = GameStorage.roles;
-			
-			for(Role r : GameStorage.roles.values()) {
+				GameStorage.rolesBackup = GameStorage.roles;
 				
-				GameStorage.kills.put(r.getPlayer().getUniqueId(), 0);
-				
-				r.startRun();
-				
-                Player p = r.getPlayer();
-                
-                Scoreboard playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-                
-                playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-        		Objective health = playerBoard.registerNewObjective("health", "health", "§cHealth");
-        		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
-                
-                Objective sidebarObjective;
-                
-                PluginDescriptionFile desc = AotUhc.plugin.getDescription();
-                sidebarObjective = playerBoard.registerNewObjective("aotuhc", "dummy", AotUhc.prefix + "§7[" + desc.getVersion() + "]");
-                
-                sidebarObjective.getScore("§l§r§7=======================").setScore(12);
-                sidebarObjective.getScore("§6§lRole : §r§a" + r.getName()).setScore(11);
-                sidebarObjective.getScore("§k§r§7=======================").setScore(10);
-                sidebarObjective.getScore("§l").setScore(9);
-                sidebarObjective.getScore("§6§lGame Time : §r§a" + GameStorage.getTime()).setScore(8);
-                sidebarObjective.getScore("§6§lPlayers : §r§a" + GameStorage.roles.size()).setScore(7);
-                sidebarObjective.getScore("§r").setScore(6);
-                sidebarObjective.getScore("§6§lKills : §r§a" + GameStorage.kills.get(p.getUniqueId())).setScore(5);
-                sidebarObjective.getScore("§a").setScore(4);
-                sidebarObjective.getScore("§6§lPvp : §r§a" + GameStorage.getPvpState()).setScore(3);
-                sidebarObjective.getScore("§6§lBorder : §r§a" + GameStorage.getBorderState()).setScore(2);
-                sidebarObjective.getScore("§c").setScore(1);
-                sidebarObjective.getScore("§6§lBorder Size : §r§a" + (int) p.getWorld().getWorldBorder().getSize() + " x " + (int) p.getWorld().getWorldBorder().getSize()).setScore(0);
-                
-                sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                
-                p.setScoreboard(playerBoard);
-                p.setHealth(p.getHealth());
-				
-			}
-			
-			AotUhc.updateTask = Bukkit.getScheduler().runTaskTimer(AotUhc.plugin, new Runnable() {
-				
-				@Override
-				public void run() {
+				for(Role r : GameStorage.roles.values()) {
 					
-					GameStorage.time++;
+					GameStorage.kills.put(r.getPlayer().getUniqueId(), 0);
 					
-					if(GameStorage.pvp > 0) {
-						
-						GameStorage.pvp--;
-						
-					}
+					r.startRun();
 					
-					if(GameStorage.border > 0) {
-						
-						GameStorage.border--;
-						
-						if(GameStorage.border == 0) {
-							
-							Bukkit.getWorlds().forEach(w -> w.getWorldBorder().setSize(AotUhc.config.isInt("border.size.end") ? AotUhc.config.getInt("border.size.end") : 50, (AotUhc.config.isInt("border.end") ? AotUhc.config.getInt("border.end") : 900) - GameStorage.time));
-							
-						}
-						
-					}
-					
-					AotUhc.plugin.refreshScoreboard();
+	                Player p = r.getPlayer();
+	                
+	                Scoreboard playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+	                
+	                playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+	        		Objective health = playerBoard.registerNewObjective("health", "health", "§cHealth");
+	        		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
+	                
+	                Objective sidebarObjective;
+	                
+	                PluginDescriptionFile desc = AotUhc.plugin.getDescription();
+	                sidebarObjective = playerBoard.registerNewObjective("aotuhc", "dummy", AotUhc.prefix + "§7[" + desc.getVersion() + "]");
+	                
+	                sidebarObjective.getScore("§l§r§7=======================").setScore(12);
+	                sidebarObjective.getScore("§6§lRole : §r§a" + r.getName()).setScore(11);
+	                sidebarObjective.getScore("§k§r§7=======================").setScore(10);
+	                sidebarObjective.getScore("§l").setScore(9);
+	                sidebarObjective.getScore("§6§lGame Time : §r§a" + GameStorage.getTime()).setScore(8);
+	                sidebarObjective.getScore("§6§lPlayers : §r§a" + GameStorage.roles.size()).setScore(7);
+	                sidebarObjective.getScore("§r").setScore(6);
+	                sidebarObjective.getScore("§6§lKills : §r§a" + GameStorage.kills.get(p.getUniqueId())).setScore(5);
+	                sidebarObjective.getScore("§a").setScore(4);
+	                sidebarObjective.getScore("§6§lPvp : §r§a" + GameStorage.getPvpState()).setScore(3);
+	                sidebarObjective.getScore("§6§lBorder : §r§a" + GameStorage.getBorderState()).setScore(2);
+	                sidebarObjective.getScore("§c").setScore(1);
+	                sidebarObjective.getScore("§6§lBorder Size : §r§a" + (int) p.getWorld().getWorldBorder().getSize() + " x " + (int) p.getWorld().getWorldBorder().getSize()).setScore(0);
+	                
+	                sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+	                
+	                p.setScoreboard(playerBoard);
+	                p.setHealth(p.getHealth());
 					
 				}
 				
-			}, 0, 20);
-			
-			return true;
+				AotUhc.updateTask = Bukkit.getScheduler().runTaskTimer(AotUhc.plugin, new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						GameStorage.time++;
+						
+						if(GameStorage.pvp > 0) {
+							
+							GameStorage.pvp--;
+							
+						}
+						
+						if(GameStorage.border > 0) {
+							
+							GameStorage.border--;
+							
+							if(GameStorage.border == 0) {
+								
+								Bukkit.getWorlds().forEach(w -> w.getWorldBorder().setSize(AotUhc.config.isInt("border.size.end") ? AotUhc.config.getInt("border.size.end") : 50, (AotUhc.config.isInt("border.end") ? AotUhc.config.getInt("border.end") : 900) - GameStorage.time));
+								
+							}
+							
+						}
+						
+						AotUhc.plugin.refreshScoreboard();
+						
+					}
+					
+				}, 0, 20);
+				
+				return true;
+				
+			}
 			
 		} else if(args.length == 1 && args[0].equalsIgnoreCase("list")) {
 			
@@ -398,7 +404,8 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 				
 					if(args.length >= 1 && args[0].equalsIgnoreCase(command.getCommandName()))  {
 						
-						List<String> argsList = Arrays.asList(args);
+						List<String> argsList = new ArrayList<String>();
+						argsList.addAll(Arrays.asList(args));
 						
 						argsList.remove(0);
 						
