@@ -58,7 +58,7 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 				
 				message = message.substring(0, message.length() - 1);
 				
-				File reportFolder = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "minor");
+				File reportFolder = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "minor");
 				
 				if(!reportFolder.exists()) {
 					
@@ -66,14 +66,14 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 					
 				}
 				
-				File reportPage = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "minor" + File.separator + title + " report-1.html");
+				File reportPage = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "minor" + File.separator + title + " report-1.html");
 
 				int i = 1;
 				
 				while(reportPage.exists()) {
 					
 					i++;
-					reportPage = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "minor" + File.separator + title + " report-" + i + ".html");
+					reportPage = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "minor" + File.separator + title + " report-" + i + ".html");
 
 				}
 				
@@ -119,7 +119,7 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 				
 				message = message.substring(0, message.length() - 1);
 				
-				File reportFolder = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "major");
+				File reportFolder = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "major");
 				
 				if(!reportFolder.exists()) {
 					
@@ -127,14 +127,14 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 					
 				}
 				
-				File reportPage = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "major" + File.separator + title + " report-1.html");
+				File reportPage = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "major" + File.separator + title + " report-1.html");
 
 				int i = 1;
 				
 				while(reportPage.exists()) {
 					
 					i++;
-					reportPage = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "major" + File.separator + title + " report-" + i + ".html");
+					reportPage = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "major" + File.separator + title + " report-" + i + ".html");
 
 				}
 				
@@ -198,7 +198,7 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 				
 				message = message.substring(0, message.length() - 1);
 				
-				File reportFolder = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "critical");
+				File reportFolder = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "critical");
 				
 				if(!reportFolder.exists()) {
 					
@@ -206,14 +206,14 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 					
 				}
 				
-				File reportPage = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "critical" + File.separator + title + " report-1.html");
+				File reportPage = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "critical" + File.separator + title + " report-1.html");
 
 				int i = 1;
 				
 				while(reportPage.exists()) {
 					
 					i++;
-					reportPage = new File(Bukkit.getWorldContainer().getPath() + File.separator + "web" + File.separator + "reports" + File.separator + "critical" + File.separator + title + " report-" + i + ".html");
+					reportPage = new File(Bukkit.getWorldContainer().getPath().replace(File.separator + "world", "") + File.separator + "web" + File.separator + "reports" + File.separator + "critical" + File.separator + title + " report-" + i + ".html");
 
 				}
 				
@@ -296,20 +296,6 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 			
 			GameStorage.gameStarted = true;
 			
-			int totalRoles = 0;
-			
-			for(Role r : RolesRegister.getRoles()) {
-				
-				totalRoles += r.getNb();
-				
-			}
-			
-			if(totalRoles < 6) {
-				
-				sender.sendMessage(AotUhc.prefix + "§cIl n'y a pas assez de roles distribuables pour lancer une partie ! Veuillez en rajouter dans la config.");
-				
-			}
-			
 			Bukkit.broadcastMessage(AotUhc.prefix + "§6Démarage de la partie");
 			
 			GameStorage.roles = new HashMap<UUID, Role>();
@@ -327,10 +313,10 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 					player.setGameMode(GameMode.SURVIVAL);
 					player.getInventory().clear();
 					
-					player.teleport(player.getWorld().getHighestBlockAt(2000 * (int) Math.cos(Math.toRadians((double) i * a)), 2000 * (int) Math.sin(Math.toRadians((double) i * a))).getLocation());
+					player.teleport(player.getWorld().getHighestBlockAt((int) (2000 * Math.cos(Math.toRadians((double) i * a))), (int) (2000 * Math.sin(Math.toRadians((double) i * a)))).getLocation());
 					player.setInvulnerable(true);
 					
-					player.sendMessage(AotUhc.prefix + "§6You're invulnerable for 60s !");
+					player.sendMessage(AotUhc.prefix + "§6Vous êtes invulnérable pendant 60s !");
 					
 					Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
 
@@ -372,7 +358,7 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 				
 	            Player p = r.getPlayer();
 	            
-	            Scoreboard playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+	            Scoreboard playerBoard;
 	            
 	            playerBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 	    		Objective health = playerBoard.registerNewObjective("health", "health", "§cHealth");
@@ -400,7 +386,7 @@ public class AotBetaCommand implements CommandExecutor, TabCompleter {
 	            sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
 	            
 	            p.setScoreboard(playerBoard);
-	            p.setHealth(p.getHealth());
+	            p.setHealth(20);
 				
 			}
 			

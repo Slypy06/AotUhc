@@ -624,7 +624,7 @@ public class Roles {
 			
 		}, Skin.hansi);
 		
-		sasha = new Role(RolesName.HANSI, AotUhc.config.isInt("sasha.nb") ? AotUhc.config.getInt("sasha.nb") : 1, Arrays.asList(), new Listener() {
+		sasha = new Role(RolesName.SASHA, AotUhc.config.isInt("sasha.nb") ? AotUhc.config.getInt("sasha.nb") : 1, Arrays.asList(), new Listener() {
 			
 			@EventHandler
 			public void onFoodLevelChange(FoodLevelChangeEvent event) {

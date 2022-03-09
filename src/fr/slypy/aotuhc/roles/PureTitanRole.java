@@ -254,7 +254,7 @@ public class PureTitanRole extends Role {
 				
 		        for(LivingEntity r : p.getWorld().getLivingEntities()) {
 
-		            if(transformed) {
+		            if(transformed && !r.getUniqueId().equals(p.getUniqueId())) {
 
 		                double size = r.getHeight();
 		                double titanSize = data.getSize();

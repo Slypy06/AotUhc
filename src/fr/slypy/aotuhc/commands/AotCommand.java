@@ -144,10 +144,10 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 					
 					double a = 360 / players.size();
 					
-					player.teleport(player.getWorld().getHighestBlockAt(2000 * (int) Math.cos(Math.toRadians((double) i * a)), 2000 * (int) Math.sin(Math.toRadians((double) i * a))).getLocation());
+					player.teleport(player.getWorld().getHighestBlockAt((int) (2000 * Math.cos(Math.toRadians((double) i * a))), (int) (2000 * Math.sin(Math.toRadians((double) i * a)))).getLocation());
 					player.setInvulnerable(true);
 					
-					player.sendMessage(AotUhc.prefix + "§6You're invulnerable for 60s !");
+					player.sendMessage(AotUhc.prefix + "§6Vous êtes invulnérable pendant 60s !");
 					
 					Bukkit.getScheduler().runTaskLater(AotUhc.plugin, new Runnable() {
 
@@ -273,7 +273,7 @@ public class AotCommand implements CommandExecutor, TabCompleter {
 	                sidebarObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
 	                
 	                p.setScoreboard(playerBoard);
-	                p.setHealth(p.getHealth());
+	                p.setHealth(20);
 					
 				}
 				
